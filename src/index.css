@@ -1,0 +1,32 @@
+.prev {
+  bottom: 50%;
+  left: 10px;
+  cursor: pointer;
+}
+
+.next {
+  bottom: 50%;
+  right: 10px;
+  cursor: pointer;
+}
+
+.container {
+  padding-top: 80px;
+}
+
+header {
+  z-index: 999;
+}
+
+
+.component {
+
+  top: 0;
+  bottom: 0;
+  
+  background-color: red;
+  z-index: 9999;
+}
+
+
+

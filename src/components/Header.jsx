@@ -1,12 +1,17 @@
 import { Link } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import { useState } from "react";
+import CanvasFavourites from "./CanvasFavourites";
 
 export function Header() {
+
+    const [openFavourites, setOpenFavorites] = useState(false);
+
     return (
-        <header className="bg-dark text-white">
+        <header className="bg-dark text-white top-0 w-100">
             <nav className="navbar navbar-expand-lg navbar-dark container">
-                <Link className="navbar-brand fw-bold" to="/">TechShop</Link>
+                <Link className="navbar-brand fw-bold px-4" to="/">TechShop</Link>
                 <button
                     className="navbar-toggler"
                     type="button"
@@ -20,26 +25,27 @@ export function Header() {
                 </button>
 
                 <div className="collapse navbar-collapse justify-content-between" id="navbarContent">
-                    <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+                    <ul className="navbar-nav me-auto mb-2 mb-lg-0 px-4">
                         <li className="nav-item">
-                            <Link className="nav-link" to="/products?category=smartphone">Smartphones</Link>
+                            <Link className="nav-link" to="?category=smartphone">Smartphones</Link>
                         </li>
                         <li className="nav-item">
-                            <Link className="nav-link" to="/products?category=tablet">Tablets</Link>
+                            <Link className="nav-link" to="?category=tablet">Tablets</Link>
                         </li>
                         <li className="nav-item">
-                            <Link className="nav-link" to="/products?category=computer">Computers</Link>
+                            <Link className="nav-link" to="?category=computer">Computers</Link>
                         </li>
                     </ul>
-                    <form className="d-flex" role="search">
-                        <input
-                            className="form-control me-2"
-                            type="search"
-                            placeholder="Cerca prodotti..."
-                            aria-label="Search"
-                        />
-                        <button className="btn btn-outline-light" type="submit">Cerca</button>
-                    </form>
+
+                    <button className="btn btn-primary mx-4" onClick={() => setOpenFavorites(true)}>Favourites</button>
+
+                    <CanvasFavourites
+                        isOpen={openFavourites}
+                        onClose={() => setOpenFavorites(false)}
+                        
+                    />
+
+                    
                 </div>
             </nav>
         </header>

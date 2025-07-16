@@ -2,6 +2,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { DefaultLayout } from "./layout/DefaultLayout";
 import { Products } from "./pages/Products";
+import { ProductPage } from "./pages/ProductPage";
+import { TabletsPage } from "./pages/TabletsPage";
+import { SmartphonesPage } from "./pages/SmartphonesPage";
+import { ComputersPage } from "./pages/ComputersPage";
+import { ContextProductsProvider } from "./context/ContextProducts";
 function App() {
 
 
@@ -9,14 +14,21 @@ function App() {
 
   return (
     <>
-      <BrowserRouter>
+    <ContextProductsProvider>
+
+        <BrowserRouter>
         <Routes>
           <Route path="/" element={<DefaultLayout />}>
             <Route index element={<Products />} />
-            {/* <Route path=":id" element = {} /> */}
+            <Route path=":id" element = {<ProductPage />} />
+            <Route path="/computer" element = {<ComputersPage />} />
+            <Route path="/tablet" element = {<TabletsPage />} />
+            <Route path="/smartphone" element = {<SmartphonesPage />} />
           </Route>
         </Routes>
       </BrowserRouter>
+
+    </ContextProductsProvider>
     </>
   )
 }
