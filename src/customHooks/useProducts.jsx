@@ -4,6 +4,7 @@ function useProducts() {
     const [products, setProducts] = useState([]);
     const [search, setSearch] = useState('');
     const [category, setCategory] = useState('');
+    const [characteristics, setCharacteristics] = useState([]);
 
     const [favourites, setFavourites] = useState(() => {
         const storedValue = localStorage.getItem('favourites');
@@ -46,6 +47,23 @@ function useProducts() {
     }
 
 
+    const getCharacteristics = async () =>{
+        try{
+            const promise = await fetch('http://localhost:3001/characteristics');
+            if(!promise.ok){
+                throw new Error(promise.status + promise.statusText)
+            }
+
+            const result = await promise.json();
+            console.log(result);
+            setCharacteristics(result);
+            return result
+        }catch(e){
+            console.error(e)
+            return null;
+        }
+    }
+
     return {
         products,
         setProducts,
@@ -57,6 +75,9 @@ function useProducts() {
         favourites,
         setFavourites,
         toggleFavourites,
+        characteristics,
+        getCharacteristics,
+        setCharacteristics
     }
 
 }

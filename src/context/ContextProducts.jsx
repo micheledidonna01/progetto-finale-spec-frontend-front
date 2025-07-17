@@ -16,10 +16,26 @@ export function ContextProductsProvider({children}) {
         favourites,
         setFavourites,
         toggleFavourites,
+        characteristics,
+        setCharacteristics,
+        getCharacteristics
     } = useProducts();
 
     return (
-        <ContextProducts.Provider value={{products, setProducts, search, setSearch, category, setCategory, getProducts, favourites, setFavourites, toggleFavourites}}>
+        <ContextProducts.Provider value={{products, 
+                                        setProducts, 
+                                        search, 
+                                        setSearch, 
+                                        category, 
+                                        setCategory, 
+                                        getProducts, 
+                                        favourites, 
+                                        setFavourites, 
+                                        toggleFavourites,
+                                        characteristics,
+                                        setCharacteristics,
+                                        getCharacteristics
+                                        }}>
             {children}
         </ContextProducts.Provider>
     )

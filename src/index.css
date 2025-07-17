@@ -23,10 +23,40 @@ header {
 
   top: 0;
   bottom: 0;
-  
+
   background-color: red;
   z-index: 9999;
 }
 
+.trans {
+  translate: -50% -50%;
+}
+
+.div-image-top{
+  height: 200px;
+}
+.card-image-top {
+  object-fit: cover;
+}
+
+.immagine-top {
+  height: 400px;
+  object-fit: cover;
+}
+
+.immagine-top-card {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
 
+
+main {
+  background-color: #012B5C;
+}
+
+.copertina {
+  width: 100%;
+  object-fit: contain;
+}

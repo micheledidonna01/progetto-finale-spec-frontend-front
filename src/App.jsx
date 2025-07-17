@@ -7,6 +7,10 @@ import { TabletsPage } from "./pages/TabletsPage";
 import { SmartphonesPage } from "./pages/SmartphonesPage";
 import { ComputersPage } from "./pages/ComputersPage";
 import { ContextProductsProvider } from "./context/ContextProducts";
+import { CharacteristicsPage } from "./pages/CharacteristicsPage";
+import { CharacteristicsForProduct } from "./pages/CharacteristicsForProduct";
+import { AddProduct } from "./pages/AddProduct";
+
 function App() {
 
 
@@ -18,13 +22,24 @@ function App() {
 
         <BrowserRouter>
         <Routes>
-          <Route path="/" element={<DefaultLayout />}>
+
+          <Route path="/products" element={<DefaultLayout />}>
             <Route index element={<Products />} />
-            <Route path=":id" element = {<ProductPage />} />
-            <Route path="/computer" element = {<ComputersPage />} />
+            <Route path="/products:id" element = {<ProductPage />} />
+            <Route path="/products/add" element = {<AddProduct />} />
+            
+            {/* <Route path="/computer" element = {<ComputersPage />} />
             <Route path="/tablet" element = {<TabletsPage />} />
-            <Route path="/smartphone" element = {<SmartphonesPage />} />
+            <Route path="/smartphone" element = {<SmartphonesPage />} /> */}
           </Route>
+
+          {/* <Route path="characteristics" element={<DefaultLayout />}>
+            <Route index element={<CharacteristicsPage />} />
+            <Route path="/characteristics:id" element = {<CharacteristicsForProduct />} />
+          </Route> */}
+
+
+
         </Routes>
       </BrowserRouter>
 

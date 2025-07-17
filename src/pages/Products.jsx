@@ -1,10 +1,24 @@
-import { useContext, useEffect, useState } from "react"
+import { useCallback, useContext, useEffect, useState, useRef } from "react"
 import { Link } from "react-router-dom";
 // import { ProductCard } from "../components/ProductCard";
 import { ContextProducts }from "../context/ContextProducts";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { ProductCard } from "../components/ProductCard";
+
+
+function useDebouncedCallback(callback, delay) {
+    const timer = useRef();
+
+    return (...args) => {
+        clearTimeout(timer.current);
+        timer.current = setTimeout(() => {
+            callback(...args);
+        }, delay);
+    };
+}
+
+
 export function Products() {
 
     const {products, 
@@ -18,10 +32,9 @@ export function Products() {
         // setFavourites,
         toggleFavourites
     } = useContext(ContextProducts);
+
     const [ordered, setOrdered] = useState('');
 
-
-    console.log(favourites);
     function handleSelect(e) {
         const selected = e.target.value; // <-- usa direttamente il valore dell'evento
         setOrdered(selected); // aggiorna comunque lo stato, per tenere traccia
@@ -51,14 +64,55 @@ export function Products() {
         setProducts(copyProducts); // aggiorna i prodotti ordinati
     }
 
+    const debounceSearch = useCallback(useDebouncedCallback((value) => {
+        setSearch(value)
+    }, 500), []);
+
     useEffect(() => {
         getProducts(search, category);
+    
     }, [search, category])
 
-    return <>
+    const scroll = useRef(null);
 
+    const handleScroll = () => {
+        
+        scroll.current.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+    }
+    // const handleScroll = (ref) => {
+    //     return ref.current.scrollIntoView({ behavior: 'smooth' })
+    // }
+    return <>
+        <div className="">
+            <img src="../../public/sfondo.png" alt="copertina" className="copertina"/>
+        </div>
         <div className="container">
-                <h1>Products</h1>
+            <section className="bg-light py-5 text-center">
+                <div className="container">
+                    <h1 className="display-4 fw-bold">Scopri la tecnologia del futuro</h1>
+                    <p className="lead mt-3 mb-4">
+                        Smartphone, tablet e PC: tutto ciò che desideri, in un unico posto.
+                    </p>
+                    <p className="mb-4 text-muted">
+                        Esplora le ultime novità, confronta i modelli e trova il dispositivo perfetto per te.
+                    </p>
+
+                    <button onClick={() => handleScroll()} className="btn btn-primary btn-lg">
+                        Inizia lo shopping
+                    </button>
+
+                    <div className="mt-5">
+                        <h5 className="text-secondary">I nostri punti di forza</h5>
+                        <ul className="list-unstyled d-flex justify-content-center gap-5 mt-3 flex-wrap">
+                            <li className="text-primary fw-semibold">✅ Prezzi competitivi</li>
+                            <li className="text-success fw-semibold">🚀 Spedizione veloce</li>
+                            <li className="text-danger fw-semibold">💬 Supporto dedicato</li>
+                            <li className="text-warning fw-semibold">🔁 Confronta i prodotti</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+                <h1 className="">Products</h1>
             <div className="d-flex justify-content-center w-100 gap-2">
                 <div>
                     <select value={category} className="form-select" onChange={(e) => setCategory(e.target.value)}>
@@ -71,13 +125,15 @@ export function Products() {
                 <div>
                     <input type="text"
                         placeholder="Search a Device"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
+                        
+                        defaultValue={search}
+                        onChange={(e) => debounceSearch(e.target.value)}
                         className="form-control"
                     />
                 </div>
+
                 <div>
-                    <select value={ordered} className="form-select" onChange={handleSelect}>
+                    <select value={ordered} className="form-select" onChange={handleSelect} ref={scroll}>
                         <option value="">Ordina per...</option>
                         <option value="titleAz">Title a-z/A-Z</option>
                         <option value="titleZa">Title z-a/Z-A</option>
@@ -88,8 +144,8 @@ export function Products() {
             </div>
 
             {products.length === 0 ? <h1>Nessun Dispositivo Trovato</h1> : 
-                <div className="container my-2">
-                    <div className="row row-cols-1 row-cols-lg-2 g-4">
+                <div className=" mt-2 py-2"  >
+                    <div className="row">
                         {products.map((p, i) => ( <ProductCard key={i} p={p} isFavourite={favourites.some(f => f.id === p.id)} toggleFavourites={() =>toggleFavourites(p)}/>))}
                     </div>
                 </div>

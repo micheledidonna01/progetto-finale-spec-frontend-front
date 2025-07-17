@@ -14,19 +14,26 @@ export default function CanvasFavourites({ isOpen, onClose }) {
     return (
         <Offcanvas show={isOpen} onHide={onClose} placement="end" backdropClassName='bg-black'>
             <Offcanvas.Header closeButton>
-                <Offcanvas.Title>Favourites</Offcanvas.Title>
+                <Offcanvas.Title>
+                    <div className='d-flex '>
+                        <p >Favourites</p>
+                        <i className='bi bi-star-fill text-warning px-2'></i>
+                    </div>
+                </Offcanvas.Title>
             </Offcanvas.Header>
             <Offcanvas.Body>
                 {/* Contenuto del canvas */}
                 {favourites.length === 0 ? <p>No favourites yet</p> :
-                    <ul className='list-group list-group-flush'>
+                    <ul className='list-group row gap-2'>
                         {favourites.map((f, i) => <li key={i} className="list-group-item d-flex justify-content-between align-items-center">
                             <span>{f.title}</span>
-                            <button onClick={() => removeAtFavourites(f)} className='btn btn-outline-danger'>Remove</button>
+                            <button onClick={() => removeAtFavourites(f)} className='btn btn-outline-danger'><i className='bi bi-trash'></i></button>
                         </li>
                         )}
                     </ul>}
-              
+                <div className=' d-flex justify-content-center w-100 position-absolute bottom-0 py-5'>
+                    <button className='btn btn-warning trans' onClick={onClose}>Close</button>
+                </div>
             </Offcanvas.Body>
         </Offcanvas>
     );

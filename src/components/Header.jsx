@@ -9,9 +9,9 @@ export function Header() {
     const [openFavourites, setOpenFavorites] = useState(false);
 
     return (
-        <header className="bg-dark text-white top-0 w-100">
+        <header className="bg-dark text-white top-0 w-100 position-fixed">
             <nav className="navbar navbar-expand-lg navbar-dark container">
-                <Link className="navbar-brand fw-bold px-4" to="/">TechShop</Link>
+                <Link className="navbar-brand fw-bold px-4" to="/products">TechShop</Link>
                 <button
                     className="navbar-toggler"
                     type="button"
@@ -27,14 +27,14 @@ export function Header() {
                 <div className="collapse navbar-collapse justify-content-between" id="navbarContent">
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0 px-4">
                         <li className="nav-item">
-                            <Link className="nav-link" to="?category=smartphone">Smartphones</Link>
+                            <Link className="nav-link" to="/products/add">Add Product</Link>
                         </li>
-                        <li className="nav-item">
+                        {/* <li className="nav-item">
                             <Link className="nav-link" to="?category=tablet">Tablets</Link>
                         </li>
                         <li className="nav-item">
                             <Link className="nav-link" to="?category=computer">Computers</Link>
-                        </li>
+                        </li> */}
                     </ul>
 
                     <button className="btn btn-primary mx-4" onClick={() => setOpenFavorites(true)}>Favourites</button>
@@ -42,7 +42,7 @@ export function Header() {
                     <CanvasFavourites
                         isOpen={openFavourites}
                         onClose={() => setOpenFavorites(false)}
-                        
+
                     />
 
                     
