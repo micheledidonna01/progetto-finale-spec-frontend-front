@@ -2,6 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'; // ✅ Solo il CSS
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import { ContextProducts } from "../context/ContextProducts";
 import { useContext } from 'react';
+import { Link } from "react-router-dom";
 export default function CanvasFavourites({ isOpen, onClose }) {
 
     const {favourites, setFavourites} = useContext(ContextProducts);
@@ -25,9 +26,11 @@ export default function CanvasFavourites({ isOpen, onClose }) {
                 {/* Contenuto del canvas */}
                 {favourites.length === 0 ? <p>No favourites yet</p> :
                     <ul className='list-group row gap-2'>
-                        {favourites.map((f, i) => <li key={i} className="list-group-item d-flex justify-content-between align-items-center">
+                        {favourites.map((f, i) => <li key={i} className="list-group-item">
+                            <Link to={`/products/${f.id}`} className='d-flex justify-content-between align-items-center'>
                             <span>{f.title}</span>
                             <button onClick={() => removeAtFavourites(f)} className='btn btn-outline-danger'><i className='bi bi-trash'></i></button>
+                            </Link> 
                         </li>
                         )}
                     </ul>}

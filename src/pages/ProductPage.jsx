@@ -1,11 +1,11 @@
 import { useState, useEffect, useContext } from "react";
-import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { ContextProducts } from "../context/ContextProducts";
+import { ModifyProductForm } from "../components/ModifyProductForm";
 export function ProductPage() {
 
     const { id } = useParams();
@@ -20,7 +20,7 @@ export function ProductPage() {
 
     const [currentIndex, setCurrentIndex] = useState(0);
 
-    const { favourites, toggleFavourites, getProducts, products, search, setCharacteristics, setProducts, characteristics } = useContext(ContextProducts);
+    const { favourites, toggleFavourites, getProducts, products, search } = useContext(ContextProducts);
 
     const isFavourite = product && product.id
         ? favourites.some((f) => f.id === product.id)
@@ -30,12 +30,14 @@ export function ProductPage() {
 
     const [selected, setSelected] = useState('');
 
+    const [modifyForm, setModifyForm] = useState(false);
+
     async function handleSelect(e) {
         const selected = e.target.value;
         setSelected(selected);
 
-        if(selected !== ''){
-            try{
+        if (selected !== '') {
+            try {
                 const promise = await fetch(`http://localhost:3001/products/${selected}`);
                 const promise2 = await fetch(`http://localhost:3001/characteristics/${selected}`);
 
@@ -57,7 +59,7 @@ export function ProductPage() {
                 console.log(productData.product, charData.characteristic);
 
                 return [productData, charData];
-            }catch(e){
+            } catch (e) {
                 console.error(e)
                 return null;
             }
@@ -134,121 +136,135 @@ export function ProductPage() {
         if (product?.category) {
             getProducts(search, product.category);
         }
-        
+
     }, [product]);
 
 
     return <>
-    <div className="bg-light">
+        <div className="bg-light">
 
-    
-        <div className="container  d-flex justify-content-center flex-wrap ">
 
-            <div className=" mb-2 col-12 d-flex justify-content-between">
-                <div className="btn btn-primary go-back" onClick={() => navigate(-1)}> <i className="bi bi-box-arrow-left"></i> </div>
-                <div className="">
-                    <i className={` 
+            <div className="container  d-flex justify-content-center flex-wrap ">
+
+                <div className=" mb-2 col-12 d-flex justify-content-between">
+                    <div className="btn btn-primary go-back px-5" onClick={() => navigate(-1)}> <i className="bi bi-box-arrow-left"></i> </div>
+                    <div className="">
+                        <i className={` 
                             bi ${isFavourite ? 'bi-star-fill text-warning' : 'bi-star'}
                          pointer fs-3 `}
-                        onClick={() => toggleFavourites(product)}
-                    >
-                    </i>
+                            onClick={() => toggleFavourites(product)}
+                        >
+                        </i>
+                    </div>
                 </div>
-            </div>
-            <div className="mt-4 mb-2">
-                <p className="card-text fs-2 text-center"> {product?.description}</p>
-            </div>
+                <div className="mt-4 mb-2 col-12">
+                    <p className="card-text fs-2 text-center"> {product?.description}</p>
+                </div>
 
-            <div className="card h-100 shadow-sm w-75">
-                {product?.images?.[0] && (
-                    <div className="position-relative">
-                        <div className="card-img-top immagine-top ">
-                            
-                            <img src={`http://localhost:3001/img/${product?.category}/${product?.images[currentIndex]}`} className="immagine-top-card" alt={product.title} />
-                            <span 
-                            className="text-secondary position-absolute next"
-                                onClick={() => setCurrentIndex(Math.min(currentIndex + 1, product.images.length - 1))}
-                            >
-                                next
-                            </span>
-                            <span 
-                            className="text-secondary position-absolute prev" 
-                            onClick={() => setCurrentIndex(Math.max(currentIndex - 1, 0))}
-                            >
-                                prev
-                            </span>
+                <div className="card h-100 shadow-sm w-75 col-12">
+                    {product?.images?.[0] && (
+                        <div className="position-relative">
+                            <div className="card-img-top immagine-top ">
+
+                                <img src={`http://localhost:3001/img/${product?.category}/${product?.images[currentIndex]}`} className="immagine-top-card" alt={product.title} />
+                                <span
+                                    className="text-black position-absolute next"
+                                    onClick={() => setCurrentIndex(Math.min(currentIndex + 1, product.images.length - 1))}
+                                >
+                                    <i className="bi bi-caret-right-square-fill icons fs-2"></i>
+                                </span>
+                                <span
+                                    className="text-black position-absolute prev"
+                                    onClick={() => setCurrentIndex(Math.max(currentIndex - 1, 0))}
+                                >
+                                    <i className="bi bi-caret-left-square-fill icons fs-2"></i>
+                                </span>
+                            </div>
+
                         </div>
+                    )}
+                    <div className="card-body d-flex flex-column">
+                        <div className="d-flex justify-content-between ">
+                            <div>
+                                <h5 className="card-title">{product?.title}</h5>
+                                <p className="badge bg-info text-dark align-self-start mb-3">{product?.category}</p>
+                            </div>
+                            <div>
+                                <button className="btn btn-success px-2" onClick={() => setModifyForm(!modifyForm)}> <i className="bi bi-pencil-square fs-4"></i></button>
+                            </div>
+
+                        </div>
+                        {product?.price != null && (
+                            <p className="card-text fst-italic">
+                                {product.discount
+                                    ? <>
+                                        <span className="text-decoration-line-through text-secondary me-2">
+                                            €{product.price.toFixed(2)}
+                                        </span>
+                                        <span className="text-danger">
+                                            €{(product.price * (1 - product.discount / 100)).toFixed(2)}
+                                        </span>
+                                    </>
+                                    : <>€{product.price.toFixed(2)}</>
+                                }
+                            </p>
+                        )}
+
+                        {modifyForm ? (
+                            <ModifyProductForm product={product} char={char} setProduct={setProduct} getPost={getPost}/>
+                        ) : (<>
+                            <button className="btn btn-danger" onClick={() => deleteProduct(product)}>Delete product</button>
+                        </>
+                        )}
 
                     </div>
-                )}
-                <div className="card-body d-flex flex-column">
-                    <h5 className="card-title">{product?.title}</h5>
-                    <p className="badge bg-info text-dark align-self-start mb-3">{product?.category}</p>
-                    {product?.price != null && (
-                        <p className="card-text fst-italic">
-                            {product.discount
-                                ? <>
-                                    <span className="text-decoration-line-through text-secondary me-2">
-                                        €{product.price.toFixed(2)}
-                                    </span>
-                                    <span className="text-danger">
-                                        €{(product.price * (1 - product.discount / 100)).toFixed(2)}
-                                    </span>
-                                </>
-                                : <>€{product.price.toFixed(2)}</>
-                            }
-                        </p>
-                    )}
 
-                    <button className="btn btn-danger" onClick={() => deleteProduct(product)}>Delete product</button>
                 </div>
+
 
             </div>
 
-
-        </div>
-
-        <div className="container">
-            <label htmlFor="selectCompare">Select a product with which you want to compare</label>
-            <select value={selected} onChange={handleSelect} className="form-select" name="selectCompare">
-                <option value="">Select a product</option>
-                {products.map((p, i) => <option key={i} value={p.id}>{p.title}</option>)}
-            </select>
-        </div>
-                    {selected === '' ?(
+            <div className="container">
+                <label htmlFor="selectCompare">Select a product with which you want to compare</label>
+                <select value={selected} onChange={handleSelect} className="form-select" name="selectCompare">
+                    <option value="">Select a product</option>
+                    {products.map((p, i) => <option key={i} value={p.id}>{p.title}</option>)}
+                </select>
+            </div>
+            {selected === '' ? (
 
                 <div className="container py-5 mt-4" >
-            {char  && char.info ? (
-                <>
-                    <h3>{char.title} </h3>
-                    <ul className="list-group list-group-flush">
-                        <li className="list-group-item"> <span className="fw-bold">Display:</span> {char.info.display}</li>
-                        <li className="list-group-item"> <span className="fw-bold">Processor:</span> {char.info.processor}</li>
-                        <li className="list-group-item"> <span className="fw-bold">RAM:</span> {char.info.ram}</li>
-                        <li className="list-group-item"> <span className="fw-bold">Storage:</span> {char.info.storage}</li>
-                        <li className="list-group-item"> <span className="fw-bold">Battery:</span> {char.info.battery}</li>
-                        <li className="list-group-item"> <span className="fw-bold">Camera:</span> {char.info.camera}</li>
+                    {char && char.info ? (
+                        <>
+                            <h3>{char.title} </h3>
+                            <ul className="list-group list-group-flush">
+                                <li className="list-group-item"> <span className="fw-bold">Display:</span> {char.info.display}</li>
+                                <li className="list-group-item"> <span className="fw-bold">Processor:</span> {char.info.processor}</li>
+                                <li className="list-group-item"> <span className="fw-bold">RAM:</span> {char.info.ram}</li>
+                                <li className="list-group-item"> <span className="fw-bold">Storage:</span> {char.info.storage}</li>
+                                <li className="list-group-item"> <span className="fw-bold">Battery:</span> {char.info.battery}</li>
+                                <li className="list-group-item"> <span className="fw-bold">Camera:</span> {char.info.camera}</li>
 
-                    </ul>
-                </>
-            ) : (
-                <>
-                    <p>Non ci sono Dettagli per questo prodotto</p>
-                </>
-            )}
-        </div>
+                            </ul>
+                        </>
+                    ) : (
+                        <>
+                            <p>Non ci sono Dettagli per questo prodotto</p>
+                        </>
+                    )}
+                </div>
 
-        ) : product?.title === productCompaire?.title ? (
-            
-            <div className="alert alert-danger container mt-4 " role="alert">
-                
+            ) : product?.title === productCompaire?.title ? (
+
+                <div className="alert alert-danger container mt-4 " role="alert">
+
                     <strong>Attenzione!</strong>
-                    <p>I prodotti che hai scelto sono uguali. <br /> 
-                        Seleziona un altro prodotto 
+                    <p>I prodotti che hai scelto sono uguali. <br />
+                        Seleziona un altro prodotto
                     </p>
 
-                    </div>
-        ) : (
+                </div>
+            ) : (
                 <div className="d-flex p-5">
                     <div className="container my-1" >
                         {char && char.info ? (
@@ -296,7 +312,7 @@ export function ProductPage() {
 
                 </div>
 
-                    )}
+            )}
 
         </div>
     </>

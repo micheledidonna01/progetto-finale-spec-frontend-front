@@ -11,7 +11,7 @@ export function Header() {
     return (
         <header className="bg-dark text-white top-0 w-100 position-fixed">
             <nav className="navbar navbar-expand-lg navbar-dark container">
-                <Link className="navbar-brand fw-bold px-4" to="/products">TechShop</Link>
+                <Link className="navbar-brand fw-bold px-4" to="/">TechShop</Link>
                 <button
                     className="navbar-toggler"
                     type="button"
@@ -29,12 +29,16 @@ export function Header() {
                         <li className="nav-item">
                             <Link className="nav-link" to="/products/add">Add Product</Link>
                         </li>
-                        {/* <li className="nav-item">
-                            <Link className="nav-link" to="?category=tablet">Tablets</Link>
+                        <li className="nav-item">
+                            <Link className="nav-link" to="/about">About</Link>
                         </li>
                         <li className="nav-item">
-                            <Link className="nav-link" to="?category=computer">Computers</Link>
-                        </li> */}
+                            <Link className="nav-link" to="/contact">Contact</Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link className="nav-link" to="/products">Products</Link>
+                        </li>
+
                     </ul>
 
                     <button className="btn btn-primary mx-4" onClick={() => setOpenFavorites(true)}>Favourites</button>

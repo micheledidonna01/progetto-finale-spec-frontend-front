@@ -2,12 +2,18 @@
   bottom: 50%;
   left: 10px;
   cursor: pointer;
+  transform: translate(0, 50%);
 }
 
 .next {
   bottom: 50%;
   right: 10px;
   cursor: pointer;
+  transform: translate(0, 50%);
+}
+
+.icons:hover {
+  color: gray;
 }
 
 .container {
@@ -32,9 +38,10 @@ header {
   translate: -50% -50%;
 }
 
-.div-image-top{
+.div-image-top {
   height: 200px;
 }
+
 .card-image-top {
   object-fit: cover;
 }
@@ -59,4 +66,8 @@ main {
 .copertina {
   width: 100%;
   object-fit: contain;
+}
+
+.viola {
+  color: #A104E7;
 }
