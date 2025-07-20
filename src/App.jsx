@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { DefaultLayout } from "./layout/DefaultLayout";
-import { Products } from "./pages/Products";
+import  Products  from "./pages/Products";
 import { ProductPage } from "./pages/ProductPage";
 import { ContextProductsProvider } from "./context/ContextProducts";
 import { AddProduct } from "./pages/AddProduct";

@@ -18,7 +18,7 @@ export function ContextProductsProvider({children}) {
         toggleFavourites,
         characteristics,
         setCharacteristics,
-        getCharacteristics
+        getCharacteristics,
     } = useProducts();
 
     return (
@@ -34,7 +34,7 @@ export function ContextProductsProvider({children}) {
                                         toggleFavourites,
                                         characteristics,
                                         setCharacteristics,
-                                        getCharacteristics
+                                        getCharacteristics,
                                         }}>
             {children}
         </ContextProducts.Provider>

@@ -1,12 +1,20 @@
-import { useState } from "react"
+import { useReducer, useState } from "react"
 import { ContextProducts } from "../context/ContextProducts";
 import { useContext } from "react";
-
+import productsReducer from "../reducers/productsReducer";
 export function AddProduct() {
 
-    const { products, setProducts, characteristics, setCharacteristics } = useContext(ContextProducts);
+    
+    
+    const { products, characteristics, } = useContext(ContextProducts);
+    const initialsState = {
+        products: products,
+        characteristics: characteristics,
+    }
+    const [state, dispatch] = useReducer(productsReducer, initialsState);
+    
 
-    const [newProduct, setNewProduct] = useState({
+    const initialSetProduct = {
         id: products.length + 1,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -18,10 +26,9 @@ export function AddProduct() {
         images: [],
         price: 0,
         discount: 0,
-        // image: newProduct?.category === "tablet" ? ["tablet1", "tablet2", "tablet3"] : newProduct.category === "computer" ? ["pc1", "pc2", "pc3"] : ["phone1", "phone2", "phone3"]
-    });
+    }
 
-    const [newCharacteristic, setNewCharacteristic] = useState({
+    const initialSetChar = {
         id: characteristics.length + 1,
         title: "Information product",
         category: '',
@@ -35,7 +42,11 @@ export function AddProduct() {
             camera: '',
             processor: '',
         }
-    });
+    }
+
+    const [newProduct, setNewProduct] = useState(initialSetProduct);
+
+    const [newCharacteristic, setNewCharacteristic] = useState(initialSetChar);
 
     // const [state, dispatch] = useReducer()
 
@@ -73,9 +84,17 @@ export function AddProduct() {
             console.log(productData);
             console.log(charData);
 
-            setProducts([...products, productData.product]);
-            setCharacteristics([...characteristics, charData.characteristic]);
-
+            // setProducts([...products, productData.product]);
+            // setCharacteristics([...characteristics, charData.characteristic]);
+            
+            dispatch({
+                type: 'ADD_PRODUCT', payload: {
+                    product: productData.product,
+                    characteristic: charData.characteristic
+                }
+});
+            
+            
         } catch (e) {
             console.error(e)
         }
@@ -116,7 +135,10 @@ export function AddProduct() {
         }
         console.log(newProduct);
         console.log(newCharacteristic);
+
         addProduct();
+        setNewProduct(initialSetProduct);
+        setNewCharacteristic(initialSetChar);
     }
 
     function handleFormProduct(e) {

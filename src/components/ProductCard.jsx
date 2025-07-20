@@ -1,7 +1,8 @@
 
 import dayjs from "dayjs";
 import { Link } from "react-router-dom";
-export function ProductCard({ p, isFavourite, toggleFavourites }) {
+import React from "react";
+function ProductCard({ p, isFavourite, toggleFavourites }) {
 
 
     return <>
@@ -43,3 +44,6 @@ export function ProductCard({ p, isFavourite, toggleFavourites }) {
 
     </>
 }
+
+// Aggiungo il memo per ottimizzare il rendimento del componente ProductCard
+export default React.memo(ProductCard); 

@@ -4,8 +4,8 @@ import { Link } from "react-router-dom";
 import { ContextProducts }from "../context/ContextProducts";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import { ProductCard } from "../components/ProductCard";
-
+import ProductCard from "../components/ProductCard";
+import React from "react";
 
 function useDebouncedCallback(callback, delay) {
     const timer = useRef();
@@ -19,7 +19,7 @@ function useDebouncedCallback(callback, delay) {
 }
 
 
-export function Products() {
+function Products() {
 
     const {products, 
         setProducts, 
@@ -154,3 +154,6 @@ export function Products() {
     </>
 
 }
+
+// Aggiungo il memo per ottimizzare il rendimento del componente Products
+export default React.memo(Products); 

@@ -1,14 +1,16 @@
-import { useState } from "react"
+import { useState, useReducer, useContext } from "react"
 import { ContextProducts } from "../context/ContextProducts";
-import { useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import productsReducer from "../reducers/productsReducer";
 export function ModifyProductForm({product, char}) {
 
-    const navigate = useNavigate();
     console.log(product);
+    console.log(char);
+    const { products, characteristics } = useContext(ContextProducts);
     
-    const { setProducts, setCharacteristics} = useContext(ContextProducts);
-
+    const [state, dispatch] = useReducer(productsReducer, {
+        products,
+        characteristics
+    } );
     const [modProduct, setModProduct] = useState({
         id: product.id,
         createdAt: product.createdAt,
@@ -42,34 +44,7 @@ export function ModifyProductForm({product, char}) {
 
     // const [state, dispatch] = useReducer()
 
-    async function modifyProduct(finalProduct, finalChar) {
-        try {
-            const promise = await fetch(`http://localhost:3001/products/${product.id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(finalProduct)
-            });
 
-            const promise2 = await fetch(`http://localhost:3001/characteristics/${product.id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(finalChar)
-            });
-
-            if (!promise.ok) throw new Error(`Prodotto: ${promise.status} ${promise.statusText}`);
-            if (!promise2.ok) throw new Error(`Caratteristiche: ${promise2.status} ${promise2.statusText}`);
-
-            const [productRes, charRes] = await Promise.all([promise, promise2]);
-            const productData = await productRes.json();
-            const charData = await charRes.json();
-
-            setProducts(prev => prev.map(p => p.id === productData.product.id ? productData.product : p));
-            setCharacteristics(prev => prev.map(c => c.id === charData.characteristic.id ? charData.characteristic : c));
-
-        } catch (e) {
-            console.error(e);
-        }
-    }
 
 
 
@@ -118,6 +93,7 @@ export function ModifyProductForm({product, char}) {
 
         window.location.reload();
     }
+
 
 
     function handleFormProduct(e) {
@@ -178,6 +154,46 @@ export function ModifyProductForm({product, char}) {
                 [name]: value
             }));
 
+        }
+    }
+
+    async function modifyProduct(product, char) {
+        try {
+            const promise = await fetch(`http://localhost:3001/products/${product.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(product)
+            });
+
+            const promise2 = await fetch(`http://localhost:3001/characteristics/${char.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(char)
+            });
+
+            if (!promise.ok) throw new Error(`Prodotto: ${promise.status} ${promise.statusText}`);
+            if (!promise2.ok) throw new Error(`Caratteristiche: ${promise2.status} ${promise2.statusText}`);
+
+            const [productRes, charRes] = await Promise.all([promise, promise2]);
+            const productData = await productRes.json();
+            const charData = await charRes.json();
+
+            // setProducts(prev => prev.map(p => p.id === productData.product.id ? productData.product : p));
+            // setCharacteristics(prev => prev.map(c => c.id === charData.characteristic.id ? charData.characteristic : c));
+
+            dispatch({ type: 'UPDATE_PRODUCT', payload: {
+                product: productData.product,
+                characteristic: charData.characteristic
+            } });
+            return [productData, charData];
+
+        } catch (e) {
+            console.error(e);
+            return null;
         }
     }
 

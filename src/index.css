@@ -34,10 +34,6 @@ header {
   z-index: 9999;
 }
 
-.trans {
-  translate: -50% -50%;
-}
-
 .div-image-top {
   height: 200px;
 }
