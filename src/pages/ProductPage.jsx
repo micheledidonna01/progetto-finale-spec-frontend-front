@@ -30,6 +30,8 @@ export function ProductPage() {
         // setCharacteristics
     } = useContext(ContextProducts);
 
+    const filterCategory = products.filter((p) => p.category === product?.category);
+
     const [state, dispatch] = useReducer(productsReducer, {
         products,
         characteristics
@@ -55,7 +57,11 @@ export function ProductPage() {
                 fetch(`http://localhost:3001/products/${id}`),
                 fetch(`http://localhost:3001/characteristics/${id}`)
             ]);
-
+            
+            if (productRes.status === 404 || charRes.status === 404) {
+                navigate("/products/not-found");
+                return;
+            }
             if (!productRes.ok || !charRes.ok) {
                 throw new Error("Errore nel recupero dei dati");
             }
@@ -83,7 +89,7 @@ export function ProductPage() {
 
             dispatch({ type: 'DELETE_PRODUCT', payload: p.id });
 
-            navigate(-1);
+            navigate('/products');
         } catch (e) {
             console.error("Errore nella deleteProduct:", e);
         }
@@ -109,6 +115,11 @@ export function ProductPage() {
         } catch (e) {
             console.error(e);
         }
+    }
+
+    if (!product) {
+        navigate("/products/not-found");
+        return;
     }
 
     return (
@@ -204,11 +215,14 @@ export function ProductPage() {
                     onChange={handleSelect}
                 >
                     <option value="">Select a product</option>
-                    {state.products.map((p) => (
-                        <option key={p.id} value={p.id}>
-                            {p.title}
-                        </option>
-                    ))}
+                    {filterCategory.map((p) => {
+                        return (
+                            <option key={p.id} value={p.id}>
+                                {p.title}
+                            </option>
+                        );
+                    })
+                    }
                 </select>
             </div>
 
@@ -236,7 +250,7 @@ export function ProductPage() {
                 ) : (
                     <div className="d-flex justify-content-between flex-wrap mt-4">
                         {[{ p: product, c: char }, { p: productCompaire, c: charCompaire }].map(({ p, c }, i) => (
-                            <div className="container" key={i}>
+                            <div className="col-6" key={i}>
                                 <h3>{p?.title}</h3>
                                 <ul className="list-group list-group-flush">
                                     <li className="list-group-item"><b>Category:</b> {p?.category}</li>
@@ -246,6 +260,7 @@ export function ProductPage() {
                                     <li className="list-group-item"><b>Storage:</b> {c?.info?.storage}</li>
                                     <li className="list-group-item"><b>Battery:</b> {c?.info?.battery}</li>
                                     <li className="list-group-item"><b>Camera:</b> {c?.info?.camera}</li>
+                                    <li className="list-group-item"><b>Price:</b> {p?.price.toFixed(2)}€</li>
                                 </ul>
                             </div>
                         ))}

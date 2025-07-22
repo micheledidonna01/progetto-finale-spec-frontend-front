@@ -143,7 +143,7 @@ function Products() {
                 </div>
             </div>
 
-            {products.length === 0 ? <h1>Nessun Dispositivo Trovato</h1> : 
+            {products.length === 0 ? <h1 className="text-white py-5 text-center">Nessun Dispositivo Trovato</h1> : 
                 <div className=" mt-2 py-2"  >
                     <div className="row">
                         {products.map((p, i) => ( <ProductCard key={i} p={p} isFavourite={favourites.some(f => f.id === p.id)} toggleFavourites={() =>toggleFavourites(p)}/>))}

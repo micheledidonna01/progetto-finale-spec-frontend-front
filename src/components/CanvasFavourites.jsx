@@ -27,10 +27,13 @@ export default function CanvasFavourites({ isOpen, onClose }) {
                 {favourites.length === 0 ? <p>No favourites yet</p> :
                     <ul className='list-group row gap-2'>
                         {favourites.map((f, i) => <li key={i} className="list-group-item ">
-                            <Link to={`/products/${f.id}`} className='d-flex justify-content-between align-items-center'>
+                            <div className='d-flex justify-content-between align-items-center'>
+
+                            <Link to={`/products/${f.id}`} >
                             <span>{f.title}</span>
-                            <button onClick={() => removeAtFavourites(f)} className='btn btn-outline-danger'><i className='bi bi-trash'></i></button>
                             </Link> 
+                            <button onClick={() => removeAtFavourites(f)} className='btn btn-outline-danger'><i className='bi bi-trash'></i></button>
+                            </div>
                         </li>
                         )}
                     </ul>}

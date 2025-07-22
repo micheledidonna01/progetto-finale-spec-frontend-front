@@ -10,6 +10,7 @@ function useProducts() {
     const [favourites, setFavourites] = useState(() => {
         const storedValue = localStorage.getItem('favourites');
         return storedValue ? JSON.parse(storedValue) : [];
+       
     });
 
     const [state, dispatch] = useReducer(productsReducer, []);

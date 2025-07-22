@@ -7,6 +7,7 @@ import { ContextProductsProvider } from "./context/ContextProducts";
 import { AddProduct } from "./pages/AddProduct";
 import { HomePage } from "./pages/HomePage";
 import { Contact } from "./pages/Contact";
+import  NotFound  from "./pages/NotFound";
 
 function App() {
 
@@ -24,11 +25,12 @@ function App() {
             <Route path="/contact" element={<Contact />} />
           </Route>
 
-          <Route path="/products" element={<DefaultLayout />}>
-            <Route index element={<Products />} />
-            <Route path="/products:id" element = {<ProductPage />} />
-            <Route path="/products/add" element = {<AddProduct />} />
-            
+            <Route path="/products" element={<DefaultLayout />}>
+              <Route index element={<Products />} />
+              <Route path=":id" element={<ProductPage />} />
+              <Route path="not-found" element={<NotFound />} />
+              <Route path="add" element={<AddProduct />} />
+   
             {/* <Route path="/computer" element = {<ComputersPage />} />
             <Route path="/tablet" element = {<TabletsPage />} />
             <Route path="/smartphone" element = {<SmartphonesPage />} /> */}
