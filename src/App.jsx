@@ -20,6 +20,7 @@ function App() {
 
         <BrowserRouter>
         <Routes>
+          
           <Route path="/" element={<DefaultLayout />}>
             <Route index element={<HomePage />} />
             <Route path="/contact" element={<Contact />} />
@@ -30,18 +31,7 @@ function App() {
               <Route path=":id" element={<ProductPage />} />
               <Route path="not-found" element={<NotFound />} />
               <Route path="add" element={<AddProduct />} />
-   
-            {/* <Route path="/computer" element = {<ComputersPage />} />
-            <Route path="/tablet" element = {<TabletsPage />} />
-            <Route path="/smartphone" element = {<SmartphonesPage />} /> */}
           </Route>
-
-          {/* <Route path="characteristics" element={<DefaultLayout />}>
-            <Route index element={<CharacteristicsPage />} />
-            <Route path="/characteristics:id" element = {<CharacteristicsForProduct />} />
-          </Route> */}
-
-
 
         </Routes>
       </BrowserRouter>

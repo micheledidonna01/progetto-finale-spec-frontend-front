@@ -1,4 +1,4 @@
-import { useReducer, useState } from "react"
+import { useMemo, useReducer, useState } from "react"
 import { ContextProducts } from "../context/ContextProducts";
 import { useContext } from "react";
 import productsReducer from "../reducers/productsReducer";
@@ -100,35 +100,39 @@ export function AddProduct() {
         }
     }
 
+    //validazione dei campi input con useMemo per evitare il re-render
 
-    const isTitleProduct = newProduct.title.length > 3;
-    const isDescriptionProduct = newProduct.description.length > 15 && newProduct.description.length < 200;
-    const isCategoryProduct = ["smartphone", "tablet", "computer"].includes(newProduct.category);
-    const isBrandProduct = newProduct.brand.length > 3;
-    const isPriceProduct = newProduct.price > 0;
-    const isDiscountProduct = newProduct.discount > 0 && newProduct.discount < 100;
-    const isRamChar = newCharacteristic.info.ram !== '';
-    const isStorageChar = newCharacteristic.info.storage !== '';
-    const isBatteryChar = newCharacteristic.info.battery !== '';
-    const isCameraChar = newCharacteristic.info.camera !== '';
-    const isProcessorChar = newCharacteristic.info.processor !== '';
-    const isDisplayChar = newCharacteristic.info.display !== '';
+    const validate = useMemo(() => ({
+
+         isTitleProduct :newProduct.title.length > 3,
+         isDescriptionProduct : newProduct.description.length > 15 && newProduct.description.length < 200,
+         isCategoryProduct :["smartphone", "tablet", "computer"].includes(newProduct.category),
+         isBrandProduct: newProduct.brand.length > 3,
+         isPriceProduct: newProduct.price > 0,
+         isDiscountProduct: newProduct.discount > 0 && newProduct.discount < 100,
+         isRamChar: newCharacteristic.info.ram !== '',
+         isStorageChar: newCharacteristic.info.storage !== '',
+         isBatteryChar: newCharacteristic.info.battery !== '',
+         isCameraChar: newCharacteristic.info.camera !== '',
+         isProcessorChar: newCharacteristic.info.processor !== '',
+         isDisplayChar: newCharacteristic.info.display !== '',
+    }))
 
     function handleSubmit(e) {
         e.preventDefault();
         if (
-            !isTitleProduct ||
-            !isDescriptionProduct ||
-            !isCategoryProduct ||
-            !isBrandProduct ||
-            !isPriceProduct ||
-            !isDiscountProduct ||
-            !isRamChar ||
-            !isStorageChar ||
-            !isBatteryChar ||
-            !isCameraChar ||
-            !isProcessorChar ||
-            !isDisplayChar
+            !validate.isTitleProduct ||
+            !validate.isDescriptionProduct ||
+            !validate.isCategoryProduct ||
+            !validate.isBrandProduct ||
+            !validate.isPriceProduct ||
+            !validate.isDiscountProduct ||
+            !validate.isRamChar ||
+            !validate.isStorageChar ||
+            !validate.isBatteryChar ||
+            !validate.isCameraChar ||
+            !validate.isProcessorChar ||
+            !validate.isDisplayChar
         ) {
             alert("Completa tutti i campi correttamente");
             return;
@@ -206,13 +210,13 @@ export function AddProduct() {
 
                     <div className="row my-3">
                         <div className="col-12 ">
-                            <label htmlFor="title" className="form-label">Nome</label>{newProduct.title.length !== 0 ? isTitleProduct ? <span className="text-success px-1">👍✅</span> : <span className="text-danger px-1">👎❌</span>: null}
+                            <label htmlFor="title" className="form-label">Nome</label>{newProduct.title.length !== 0 ? validate.isTitleProduct ? <span className="text-success px-1">👍✅</span> : <span className="text-danger px-1">👎❌</span>: null}
                             <input type="text" className="form-control" id="title" name="title" required value={newProduct.title} onChange={handleFormProduct} />
                         </div>
                     </div>
 
                     <div className="my-3">
-                        <label htmlFor="description" className="form-label">Descrizione</label>{newProduct.description.length !== 0 ? isDescriptionProduct ? <span className="px-1">👍✅</span> : <span className="px-1">👎❌</span> : null}
+                        <label htmlFor="description" className="form-label">Descrizione</label>{newProduct.description.length !== 0 ? validate.isDescriptionProduct ? <span className="px-1">👍✅</span> : <span className="px-1">👎❌</span> : null}
                         <textarea className="form-control" id="description" name="description" rows="3" value={newProduct.description} onChange={handleFormProduct}></textarea>
                     </div>
 
@@ -227,7 +231,7 @@ export function AddProduct() {
                             </select>
                         </div>
                         <div className="col-md-6">
-                            <label htmlFor="brand" className="form-label">Brand</label>{newProduct.brand.length !== 0 ? isBrandProduct ? <span className="px-1">👍✅</span> : <span className="px-1">👎❌</span> : null}
+                            <label htmlFor="brand" className="form-label">Brand</label>{newProduct.brand.length !== 0 ? validate.isBrandProduct ? <span className="px-1">👍✅</span> : <span className="px-1">👎❌</span> : null}
                             <input type="text" className="form-control" id="brand" name="brand" value={newProduct.brand} onChange={handleFormProduct} />
                         </div>
                         {/* <div className="col-md-4">
@@ -242,11 +246,11 @@ export function AddProduct() {
 
                     <div className="row my-4">
                         <div className="col-md-6">
-                            <label htmlFor="price" className="form-label">Prezzo (€)</label>{newProduct.price !== 0 ? isPriceProduct ? <span className="px-1">👍✅</span> : <span className="px-1">👎❌</span> : null}
+                            <label htmlFor="price" className="form-label">Prezzo (€)</label>{newProduct.price !== 0 ? validate.isPriceProduct ? <span className="px-1">👍✅</span> : <span className="px-1">👎❌</span> : null}
                             <input type="number" className="form-control" id="price" name="price" step="0.01" value={newProduct.price} onChange={handleFormProduct} />
                         </div>
                         <div className="col-md-6">
-                            <label htmlFor="discount" className="form-label">Sconto (%)</label>{newProduct.discount !== 0 ? isDiscountProduct ? <span className="px-1">👍✅</span> : <span className="px-1">👎❌</span> : null}
+                            <label htmlFor="discount" className="form-label">Sconto (%)</label>{newProduct.discount !== 0 ? validate.isDiscountProduct ? <span className="px-1">👍✅</span> : <span className="px-1">👎❌</span> : null}
                             <input type="number" className="form-control" id="discount" name="discount" min="0" max="100" value={newProduct.discount} onChange={handleFormProduct} />
                         </div>
                     </div>

@@ -26,15 +26,17 @@ export function ProductPage() {
         products,
         characteristics,
         search,
+        setSearch,
         // setProducts,
         // setCharacteristics
     } = useContext(ContextProducts);
 
+    
     const filterCategory = products.filter((p) => p.category === product?.category);
 
     const [state, dispatch] = useReducer(productsReducer, {
         products,
-        characteristics
+        characteristics,
     });
 
     const isFavourite = product && product.id
@@ -46,6 +48,8 @@ export function ProductPage() {
     }, [id]);
 
     useEffect(() => {
+        
+        setSearch('');
         if (product?.category) {
             getProducts(search, product.category);
         }
@@ -57,7 +61,7 @@ export function ProductPage() {
                 fetch(`http://localhost:3001/products/${id}`),
                 fetch(`http://localhost:3001/characteristics/${id}`)
             ]);
-            
+
             if (productRes.status === 404 || charRes.status === 404) {
                 navigate("/products/not-found");
                 return;
@@ -115,11 +119,6 @@ export function ProductPage() {
         } catch (e) {
             console.error(e);
         }
-    }
-
-    if (!product) {
-        navigate("/products/not-found");
-        return;
     }
 
     return (

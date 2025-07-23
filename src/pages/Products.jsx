@@ -7,13 +7,14 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import ProductCard from "../components/ProductCard";
 import React from "react";
 
-function useDebouncedCallback(callback, delay) {
-    const timer = useRef();
 
-    return (...args) => {
-        clearTimeout(timer.current);
-        timer.current = setTimeout(() => {
-            callback(...args);
+//funzione di debounce che permette il ritardo della callback function che viene passata 
+function debounce(callback, delay) {
+    let timer;
+    return (value) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            callback(value);
         }, delay);
     };
 }
@@ -64,7 +65,8 @@ function Products() {
         setProducts(copyProducts); // aggiorna i prodotti ordinati
     }
 
-    const debounceSearch = useCallback(useDebouncedCallback((value) => {
+    //funzione useCallback che se l'argomento cambia ritorna una nuova funzione con il nuovo argomento
+    const debounceSearch = useCallback(debounce((value) => {
         setSearch(value)
     }, 500), []);
 
@@ -73,11 +75,12 @@ function Products() {
     
     }, [search, category])
 
+    //variabile di riferimento per lo scroll
     const scroll = useRef(null);
 
     const handleScroll = () => {
         
-        scroll.current.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+        scroll.current.scrollIntoView({ behavior: 'smooth'});
     }
     // const handleScroll = (ref) => {
     //     return ref.current.scrollIntoView({ behavior: 'smooth' })

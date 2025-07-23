@@ -1,16 +1,17 @@
-import { useState, useReducer, useContext } from "react"
+import { useState, useReducer, useContext, useMemo } from "react"
 import { ContextProducts } from "../context/ContextProducts";
 import productsReducer from "../reducers/productsReducer";
-export function ModifyProductForm({product, char}) {
+export function ModifyProductForm({ product, char }) {
 
     console.log(product);
     console.log(char);
     const { products, characteristics } = useContext(ContextProducts);
-    
+
     const [state, dispatch] = useReducer(productsReducer, {
         products,
         characteristics
-    } );
+    });
+
     const [modProduct, setModProduct] = useState({
         id: product.id,
         createdAt: product.createdAt,
@@ -23,7 +24,6 @@ export function ModifyProductForm({product, char}) {
         images: [],
         price: 0,
         discount: 0,
-        // image: modProduct?.category === "tablet" ? ["tablet1", "tablet2", "tablet3"] : modProduct.category === "computer" ? ["pc1", "pc2", "pc3"] : ["phone1", "phone2", "phone3"]
     });
 
     const [modCharacteristic, setModCharacteristic] = useState({
@@ -42,24 +42,16 @@ export function ModifyProductForm({product, char}) {
         }
     });
 
-    // const [state, dispatch] = useReducer()
+    // Validazione campi input del form
+    const validation = useMemo(() => ({
+        isTitleProduct : modProduct.title.length !== 0 && modProduct.title.length > 3,
+        isDescriptionProduct : modProduct.title.length !== 0 && modProduct.description.length > 15 && modProduct.description.length < 200,
+        isBrandProduct : modProduct.brand.length !== 0 && modProduct.brand.length > 3,
+        isPriceProduct : modProduct.price !== 0 && modProduct.price > 0,
+        isDiscountProduct : modProduct.discount !== 0 && modProduct.discount > 0 && modProduct.discount < 100,
+    }), [modProduct]);
 
-
-
-
-
-    const isTitleProduct = modProduct.title.length !== 0 && modProduct.title.length > 3;
-    const isDescriptionProduct = modProduct.title.length !== 0 && modProduct.description.length > 15 && modProduct.description.length < 200;
-    // const isCategoryProduct = ["smartphone", "tablet", "computer"].includes(modProduct.category);
-    const isBrandProduct = modProduct.brand.length !== 0 && modProduct.brand.length > 3;
-    const isPriceProduct = modProduct.price !== 0 && modProduct.price > 0;
-    const isDiscountProduct = modProduct.discount !== 0 && modProduct.discount > 0 && modProduct.discount < 100;
-    // const isRamChar = modCharacteristic.info.ram !== '';
-    // const isStorageChar = modCharacteristic.info.storage !== '';
-    // const isBatteryChar = modCharacteristic.info.battery !== '';
-    // const isCameraChar = modCharacteristic.info.camera !== '';
-    // const isProcessorChar = modCharacteristic.info.processor !== '';
-    // const isDisplayChar = modCharacteristic.info.display !== '';
+    console.log(validation);
 
     function handleSubmit(e) {
         e.preventDefault();
@@ -91,6 +83,7 @@ export function ModifyProductForm({product, char}) {
 
         modifyProduct(finalProduct, finalChar);
 
+        //ricarica la pagina
         window.location.reload();
     }
 
@@ -185,10 +178,12 @@ export function ModifyProductForm({product, char}) {
             // setProducts(prev => prev.map(p => p.id === productData.product.id ? productData.product : p));
             // setCharacteristics(prev => prev.map(c => c.id === charData.characteristic.id ? charData.characteristic : c));
 
-            dispatch({ type: 'UPDATE_PRODUCT', payload: {
-                product: productData.product,
-                characteristic: charData.characteristic
-            } });
+            dispatch({
+                type: 'UPDATE_PRODUCT', payload: {
+                    product: productData.product,
+                    characteristic: charData.characteristic
+                }
+            });
             return [productData, charData];
 
         } catch (e) {
@@ -207,13 +202,13 @@ export function ModifyProductForm({product, char}) {
 
             <div className="row my-3">
                 <div className="col-12 ">
-                    <label htmlFor="title" className="form-label">Nome</label>{modProduct.title.length !== 0 ? isTitleProduct ? <span className="text-success px-1">👍✅</span> : <span className="text-danger px-1">👎❌</span> : null}
-                    <input type="text" className="form-control" id="title" name="title" value={modProduct.title} onChange={handleFormProduct} placeholder={product.title}/>
+                    <label htmlFor="title" className="form-label">Nome</label>{modProduct.title.length !== 0 ? validation.isTitleProduct ? <span className="text-success px-1">👍✅</span> : <span className="text-danger px-1">👎❌</span> : null}
+                    <input type="text" className="form-control" id="title" name="title" value={modProduct.title} onChange={handleFormProduct} placeholder={product.title} />
                 </div>
             </div>
 
             <div className="my-3">
-                <label htmlFor="description" className="form-label">Descrizione</label>{modProduct.description.length !== 0 ? isDescriptionProduct ? <span className="px-1">👍✅</span> : <span className="px-1">👎❌</span> : null}
+                <label htmlFor="description" className="form-label">Descrizione</label>{modProduct.description.length !== 0 ? validation.isDescriptionProduct ? <span className="px-1">👍✅</span> : <span className="px-1">👎❌</span> : null}
                 <textarea className="form-control" id="description" name="description" rows="3" value={modProduct.description} onChange={handleFormProduct} placeholder={product.description}></textarea>
             </div>
 
@@ -228,8 +223,8 @@ export function ModifyProductForm({product, char}) {
                     </select>
                 </div>
                 <div className="col-md-6">
-                    <label htmlFor="brand" className="form-label">Brand</label>{modProduct.brand.length !== 0 ? isBrandProduct ? <span className="px-1">👍✅</span> : <span className="px-1">👎❌</span> : null}
-                    <input type="text" className="form-control" id="brand" name="brand" value={modProduct.brand} onChange={handleFormProduct} placeholder={product.brand}/>
+                    <label htmlFor="brand" className="form-label">Brand</label>{modProduct.brand.length !== 0 ? validation.isBrandProduct ? <span className="px-1">👍✅</span> : <span className="px-1">👎❌</span> : null}
+                    <input type="text" className="form-control" id="brand" name="brand" value={modProduct.brand} onChange={handleFormProduct} placeholder={product.brand} />
                 </div>
                 {/* <div className="col-md-4">
                             <label htmlFor="images" className="form-label">Immagini (URL separati da virgola)</label>
@@ -243,11 +238,11 @@ export function ModifyProductForm({product, char}) {
 
             <div className="row my-4">
                 <div className="col-md-6">
-                    <label htmlFor="price" className="form-label">Prezzo (€)</label>{modProduct.price !== 0 ? isPriceProduct ? <span className="px-1">👍✅</span> : <span className="px-1">👎❌</span> : null}
+                    <label htmlFor="price" className="form-label">Prezzo (€)</label>{modProduct.price !== 0 ? validation.isPriceProduct ? <span className="px-1">👍✅</span> : <span className="px-1">👎❌</span> : null}
                     <input type="number" className="form-control" id="price" name="price" step="0.01" value={modProduct.price} onChange={handleFormProduct} />
                 </div>
                 <div className="col-md-6">
-                    <label htmlFor="discount" className="form-label">Sconto (%)</label>{modProduct.discount !== 0 ? isDiscountProduct ? <span className="px-1">👍✅</span> : <span className="px-1">👎❌</span> : null}
+                    <label htmlFor="discount" className="form-label">Sconto (%)</label>{modProduct.discount !== 0 ? validation.isDiscountProduct ? <span className="px-1">👍✅</span> : <span className="px-1">👎❌</span> : null}
                     <input type="number" className="form-control" id="discount" name="discount" min="0" max="100" value={modProduct.discount} onChange={handleFormProduct} />
                 </div>
             </div>

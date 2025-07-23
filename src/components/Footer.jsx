@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export function Footer() {
     return (
         <footer className="bg-dark text-white">
@@ -14,9 +16,9 @@ export function Footer() {
                     <div className="col-md-4 mb-3">
                         <h5>Collegamenti utili</h5>
                         <ul className="list-unstyled">
-                            <li><a href="/" className="text-white text-decoration-none">Home</a></li>
-                            <li><a href="/products" className="text-white text-decoration-none">Prodotti</a></li>
-                            <li><a href="/contatti" className="text-white text-decoration-none">Contatti</a></li>
+                            <li><Link href="/" className="text-white text-decoration-none">Home</Link></li>
+                            <li><Link href="/products" className="text-white text-decoration-none">Prodotti</Link></li>
+                            <li><Link href="/contact" className="text-white text-decoration-none">Contatti</Link></li>
                         </ul>
                     </div>
 
