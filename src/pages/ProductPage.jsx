@@ -6,17 +6,21 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import { ContextProducts } from "../context/ContextProducts";
 import { ModifyProductForm } from "../components/ModifyProductForm";
 import productsReducer from "../reducers/productsReducer";
+import Select from 'react-select';
 
 export function ProductPage() {
+
     const { id } = useParams();
+
+    // funzione di navigazione
     const navigate = useNavigate();
 
     const [product, setProduct] = useState(null);
     const [char, setChar] = useState(null);
-    const [productCompaire, setProductCompaire] = useState(null);
-    const [charCompaire, setCharCompaire] = useState(null);
+    const [productCompaire, setProductCompaire] = useState({});
+    const [charCompaire, setCharCompaire] = useState({});
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [selected, setSelected] = useState('');
+    const [selected, setSelected] = useState([]);
     const [modifyForm, setModifyForm] = useState(false);
 
     const {
@@ -31,30 +35,34 @@ export function ProductPage() {
         // setCharacteristics
     } = useContext(ContextProducts);
 
-    
+    // filtro per categoria del prodotto
     const filterCategory = products.filter((p) => p.category === product?.category);
 
+    // dichiarazione di useReducer
     const [state, dispatch] = useReducer(productsReducer, {
         products,
         characteristics,
     });
 
+
     const isFavourite = product && product.id
         ? favourites.some((f) => f.id === product.id)
         : false;
 
+    // visualizzazione del prodotto al montare del componente e al cambiamento di id
     useEffect(() => {
         getPost(id);
     }, [id]);
 
+    // visualizzazione di tutti i prodotti che hanno la stessa categoria del prodotto 
     useEffect(() => {
-        
         setSearch('');
         if (product?.category) {
             getProducts(search, product.category);
         }
     }, [product]);
 
+    // funzione asincrona che recupera il prodotto e le caratteristiche
     async function getPost(id) {
         try {
             const [productRes, charRes] = await Promise.all([
@@ -70,16 +78,21 @@ export function ProductPage() {
                 throw new Error("Errore nel recupero dei dati");
             }
 
+            // recupero dei dati
             const productData = await productRes.json();
             const charData = await charRes.json();
 
+            // setto il prodotto e le caratteristiche
             setProduct(productData.product);
             setChar(charData.characteristic);
         } catch (e) {
+
+            // gestione degli errori
             console.error(e);
         }
     }
 
+    // funzione asincrona che gestisce la cancellazione del prodotto
     async function deleteProduct(p) {
         try {
             const [res1, res2] = await Promise.all([
@@ -91,35 +104,103 @@ export function ProductPage() {
                 throw new Error("Errore nella cancellazione");
             }
 
+            // gestione della cancellazione
             dispatch({ type: 'DELETE_PRODUCT', payload: p.id });
 
+            // navigazione alla pagina dei prodotti
             navigate('/products');
         } catch (e) {
+
+            // gestione degli errori
             console.error("Errore nella deleteProduct:", e);
         }
     }
 
+    async function getDataProduct(id) {
+        const res = await fetch(`http://localhost:3001/products/${id}`);
+
+        return res.json();
+    }
+    async function getDataChar(id) {
+        const resChar = await fetch(`http://localhost:3001/characteristics/${id}`);
+
+        return resChar.json();
+    }
+
+    // funzione asincrona che gestisce la modifica del prodotto
     async function handleSelect(e) {
-        const selectedId = e.target.value;
-        setSelected(selectedId);
+        console.log(e.target.selectedOptions);
+        if(e.target.selectedOptions.length === 0) return;
+        let selectedId = Array.from(e.target.selectedOptions, (option) => option.value);
+        if(selectedId.includes("not-prod")) return setSelected([]);
+        selectedId = selectedId.map(id => parseInt(id));
+        console.log(selectedId);
+        // se non è stato selezionato nessun prodotto, esco
+        if (selectedId.length === 0) return;
 
-        if (!selectedId) return;
-
+        // recupero il prodotto e le caratteristiche che voglio confrontare
         try {
-            const [productRes, charRes] = await Promise.all([
-                fetch(`http://localhost:3001/products/${selectedId}`),
-                fetch(`http://localhost:3001/characteristics/${selectedId}`),
+
+            const promisesProduct = selectedId.map(id => getDataProduct(id));
+            console.log(promisesProduct);
+            const resultsProduct = await Promise.all(promisesProduct)
+
+            const promisesChar = selectedId.map(id => getDataChar(id));
+            console.log(promisesChar);
+            const resultsChar = await Promise.all(promisesChar)
+
+            // const [productRes, charRes] = await Promise.all([
+            //     fetch(`http://localhost:3001/products/${selectedId}`),
+            //     fetch(`http://localhost:3001/characteristics/${selectedId}`),
+            // ]);
+
+            // recupero dati
+            // const productData = await productRes.json();
+            // const charData = await charRes.json();
+
+            // setto il prodotto e le caratteristiche
+            // setProductCompaire(productData.product);
+            // setCharCompaire(charData.characteristic);
+
+            console.log(resultsProduct);
+            setProductCompaire(resultsProduct.map(r => r.product));
+            console.log(productCompaire);
+
+            console.log(resultsChar);
+            setCharCompaire(resultsChar.map(r => r.characteristic));
+            console.log(charCompaire);
+
+            const existSelected = selected.find(s => s.product.id === resultsProduct[0].product.id);
+
+            if (existSelected) {
+                setSelected(prev => prev.filter(s => s.product.id !== resultsProduct[0].product.id));
+                return;
+            } 
+
+            setSelected(prev => [
+                ...prev,
+                ...resultsProduct.map((r, i) => ({ product: r.product, characteristic: resultsChar[i].characteristic }))
             ]);
 
-            const productData = await productRes.json();
-            const charData = await charRes.json();
 
-            setProductCompaire(productData.product);
-            setCharCompaire(charData.characteristic);
+            console.log(selected);
         } catch (e) {
+
+            // gestione degli errori
             console.error(e);
         }
     }
+
+    // visualizzazione dei prodotti che hanno la stessa categoria
+    const options = filterCategory.map((p) => {
+        return {
+            value: p.id,
+            label: p.title
+        }
+
+    })
+
+    console.log(options);
 
     return (
         <div className="bg-light">
@@ -207,17 +288,19 @@ export function ProductPage() {
 
             <div className="container mt-5">
                 <label htmlFor="selectCompare">Select a product to compare</label>
+
                 <select
                     className="form-select"
                     name="selectCompare"
                     value={selected}
                     onChange={handleSelect}
+                    multiple
                 >
-                    <option value="">Select a product</option>
-                    {filterCategory.map((p) => {
+                    <option value="not-prod">Remove product to compare</option>
+                    {options.map((o) => {
                         return (
-                            <option key={p.id} value={p.id}>
-                                {p.title}
+                            <option key={o.value} value={o.value}>
+                                {o.label}
                             </option>
                         );
                     })
@@ -226,7 +309,7 @@ export function ProductPage() {
             </div>
 
             <div className="container py-5 mt-4">
-                {selected === '' ? (
+                {selected.length === 0 ? (
                     char && char.info ? (
                         <>
                             <h3>{char.title}</h3>
@@ -248,8 +331,8 @@ export function ProductPage() {
                     </div>
                 ) : (
                     <div className="d-flex justify-content-between flex-wrap mt-4">
-                        {[{ p: product, c: char }, { p: productCompaire, c: charCompaire }].map(({ p, c }, i) => (
-                            <div className="col-6" key={i}>
+                        {[{ p: product, c: char }].map(({ p, c }, i) => (
+                            <div className="col-sm-12 col-md-6 p-3" key={i}>
                                 <h3>{p?.title}</h3>
                                 <ul className="list-group list-group-flush">
                                     <li className="list-group-item"><b>Category:</b> {p?.category}</li>
@@ -263,7 +346,39 @@ export function ProductPage() {
                                 </ul>
                             </div>
                         ))}
+                        {selected.map((s, i) => (
+                            <div className="col-sm-12 col-md-6 p-3" key={i}>
+                                <h3>{s.product?.title}</h3>
+                                <ul className="list-group list-group-flush">
+                                    <li className="list-group-item"><b>Category:</b> {s.product?.category}</li>
+                                    <li className="list-group-item"><b>Display:</b> {s.characteristic?.info?.display}</li>
+                                    <li className="list-group-item"><b>Processor:</b> {s.characteristic?.info?.processor}</li>
+                                    <li className="list-group-item"><b>RAM:</b> {s.characteristic?.info?.ram}</li>
+                                    <li className="list-group-item"><b>Storage:</b> {s.characteristic?.info?.storage}</li>
+                                    <li className="list-group-item"><b>Battery:</b> {s.characteristic?.info?.battery}</li>
+                                    <li className="list-group-item"><b>Camera:</b> {s.characteristic?.info?.camera}</li>
+                                    <li className="list-group-item"><b>Price:</b> {s.product?.price?.toFixed(2)}€</li>
+                                </ul>
+                            </div>
+                        ))}
                     </div>
+                    // <div className="d-flex justify-content-between flex-wrap mt-4">
+                    //     {[{ p: product, c: char }, { p: productCompaire, c: charCompaire }].map(({ p, c }, i) => (
+                    //         <div className="col-6" key={i}>
+                    //             <h3>{p?.title}</h3>
+                    // <ul className="list-group list-group-flush">
+                    //     <li className="list-group-item"><b>Category:</b> {p?.category}</li>
+                    //     <li className="list-group-item"><b>Display:</b> {c?.info?.display}</li>
+                    //     <li className="list-group-item"><b>Processor:</b> {c?.info?.processor}</li>
+                    //     <li className="list-group-item"><b>RAM:</b> {c?.info?.ram}</li>
+                    //     <li className="list-group-item"><b>Storage:</b> {c?.info?.storage}</li>
+                    //     <li className="list-group-item"><b>Battery:</b> {c?.info?.battery}</li>
+                    //     <li className="list-group-item"><b>Camera:</b> {c?.info?.camera}</li>
+                    //     <li className="list-group-item"><b>Price:</b> {p?.price.toFixed(2)}€</li>
+                    // </ul>
+                    //         </div>
+                    //     ))}
+                    // </div>
                 )}
             </div>
         </div>

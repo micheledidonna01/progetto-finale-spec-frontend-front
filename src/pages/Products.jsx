@@ -22,6 +22,7 @@ function debounce(callback, delay) {
 
 function Products() {
 
+    // uso del context da cui prendo ciò che mi serve per il componente
     const {products, 
         setProducts, 
         search, 
@@ -36,6 +37,7 @@ function Products() {
 
     const [ordered, setOrdered] = useState('');
 
+    // funzione per ordinare i prodotti
     function handleSelect(e) {
         const selected = e.target.value; // <-- usa direttamente il valore dell'evento
         setOrdered(selected); // aggiorna comunque lo stato, per tenere traccia
@@ -65,26 +67,26 @@ function Products() {
         setProducts(copyProducts); // aggiorna i prodotti ordinati
     }
 
-    //funzione useCallback che se l'argomento cambia ritorna una nuova funzione con il nuovo argomento
+    // funzione useCallback che se l'argomento cambia ritorna una nuova funzione con il nuovo argomento
     const debounceSearch = useCallback(debounce((value) => {
         setSearch(value)
     }, 500), []);
 
+    // al montaggio del componente chiamo la funzione per ottenere i prodotti
     useEffect(() => {
         getProducts(search, category);
     
     }, [search, category])
 
-    //variabile di riferimento per lo scroll
+    // variabile di riferimento per lo scroll
     const scroll = useRef(null);
 
+    // funzione di scroll
     const handleScroll = () => {
         
         scroll.current.scrollIntoView({ behavior: 'smooth'});
     }
-    // const handleScroll = (ref) => {
-    //     return ref.current.scrollIntoView({ behavior: 'smooth' })
-    // }
+
     return <>
         <div className="">
             <img src="../../public/sfondo.png" alt="copertina" className="copertina"/>

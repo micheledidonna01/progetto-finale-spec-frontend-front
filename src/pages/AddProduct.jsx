@@ -4,15 +4,19 @@ import { useContext } from "react";
 import productsReducer from "../reducers/productsReducer";
 export function AddProduct() {
 
-    
-    
-    const { products, characteristics, } = useContext(ContextProducts);
+
+    // Dichiarazione di useContext
+    const { products, characteristics } = useContext(ContextProducts);
+
+    // Dichiarazione dello stato iniziale per useReducer
     const initialsState = {
         products: products,
         characteristics: characteristics,
     }
+
+    // Dichiarazione di useReducer
     const [state, dispatch] = useReducer(productsReducer, initialsState);
-    
+
 
     const initialSetProduct = {
         id: products.length + 1,
@@ -44,12 +48,13 @@ export function AddProduct() {
         }
     }
 
+    // stato locale per il form per aggiungere un nuovo prodotto
     const [newProduct, setNewProduct] = useState(initialSetProduct);
 
+    // stato locale per il form per aggiungere nuove caratteristiche
     const [newCharacteristic, setNewCharacteristic] = useState(initialSetChar);
 
-    // const [state, dispatch] = useReducer()
-
+    // funzione asincrona per aggiungere un nuovo prodotto
     async function addProduct() {
 
         try {
@@ -77,62 +82,67 @@ export function AddProduct() {
                 throw new Error('Problemi con la risposta del server per le caratteristiche' + promise2.status + ' ' + promise2.statusText)
             }
 
+            // recupero dei dati
             let [productRes, charRes] = await Promise.all([promise, promise2]);
             let productData = await productRes.json();
-
             let charData = await charRes.json();
+
             console.log(productData);
             console.log(charData);
 
-            // setProducts([...products, productData.product]);
-            // setCharacteristics([...characteristics, charData.characteristic]);
-            
+            // setto il prodotto e le caratteristiche con il dispatch di useReducer
             dispatch({
                 type: 'ADD_PRODUCT', payload: {
                     product: productData.product,
                     characteristic: charData.characteristic
                 }
-});
-            
-            
+            });
+
+
         } catch (e) {
+
+            // gestione degli errori
             console.error(e)
         }
     }
 
-    //validazione dei campi input con useMemo per evitare il re-render
+    //validazione dei campi input per il nuovo prodotto con useMemo per evitare il re-render inutili
+    const validateProduct = useMemo(() => ({
 
-    const validate = useMemo(() => ({
+        isTitleProduct: newProduct.title.length > 3,
+        isDescriptionProduct: newProduct.description.length > 15 && newProduct.description.length < 200,
+        isCategoryProduct: ["smartphone", "tablet", "computer"].includes(newProduct.category),
+        isBrandProduct: newProduct.brand.length > 3,
+        isPriceProduct: newProduct.price > 0,
+        isDiscountProduct: newProduct.discount > 0 && newProduct.discount < 100,
 
-         isTitleProduct :newProduct.title.length > 3,
-         isDescriptionProduct : newProduct.description.length > 15 && newProduct.description.length < 200,
-         isCategoryProduct :["smartphone", "tablet", "computer"].includes(newProduct.category),
-         isBrandProduct: newProduct.brand.length > 3,
-         isPriceProduct: newProduct.price > 0,
-         isDiscountProduct: newProduct.discount > 0 && newProduct.discount < 100,
-         isRamChar: newCharacteristic.info.ram !== '',
-         isStorageChar: newCharacteristic.info.storage !== '',
-         isBatteryChar: newCharacteristic.info.battery !== '',
-         isCameraChar: newCharacteristic.info.camera !== '',
-         isProcessorChar: newCharacteristic.info.processor !== '',
-         isDisplayChar: newCharacteristic.info.display !== '',
-    }))
+    }), [newProduct]);
+
+    // validazione dei campi input per le caratteristiche con useMemo per evitare re-render inutili
+    const validateChar = useMemo(() => ({
+        isRamChar: newCharacteristic.info.ram !== '',
+        isStorageChar: newCharacteristic.info.storage !== '',
+        isBatteryChar: newCharacteristic.info.battery !== '',
+        isCameraChar: newCharacteristic.info.camera !== '',
+        isProcessorChar: newCharacteristic.info.processor !== '',
+        isDisplayChar: newCharacteristic.info.display !== '',
+    }), [newCharacteristic]);
 
     function handleSubmit(e) {
         e.preventDefault();
         if (
-            !validate.isTitleProduct ||
-            !validate.isDescriptionProduct ||
-            !validate.isCategoryProduct ||
-            !validate.isBrandProduct ||
-            !validate.isPriceProduct ||
-            !validate.isDiscountProduct ||
-            !validate.isRamChar ||
-            !validate.isStorageChar ||
-            !validate.isBatteryChar ||
-            !validate.isCameraChar ||
-            !validate.isProcessorChar ||
-            !validate.isDisplayChar
+            !validateProduct.isTitleProduct ||
+            !validateProduct.isDescriptionProduct ||
+            !validateProduct.isCategoryProduct ||
+            !validateProduct.isBrandProduct ||
+            !validateProduct.isPriceProduct ||
+            !validateProduct.isDiscountProduct ||
+            !validateChar.isRamChar ||
+            !validateChar.isStorageChar ||
+            !validateChar.isBatteryChar ||
+            !validateChar.isCameraChar ||
+            !validateChar.isProcessorChar ||
+            !validateChar.isDisplayChar
         ) {
             alert("Completa tutti i campi correttamente");
             return;
@@ -203,20 +213,20 @@ export function AddProduct() {
 
     return (
         <div className="py-5">
-            
+
             <div className="container py-5">
                 <form onSubmit={handleSubmit} className="p-4 shadow rounded bg-light">
                     <h2 className="mb-4 text-primary">Dettagli Prodotto</h2>
 
                     <div className="row my-3">
                         <div className="col-12 ">
-                            <label htmlFor="title" className="form-label">Nome</label>{newProduct.title.length !== 0 ? validate.isTitleProduct ? <span className="text-success px-1">👍✅</span> : <span className="text-danger px-1">👎❌</span>: null}
+                            <label htmlFor="title" className="form-label">Nome</label>{newProduct.title.length !== 0 ? validateProduct.isTitleProduct ? <span className="text-success px-1">👍✅</span> : <span className="text-danger px-1">👎❌</span> : null}
                             <input type="text" className="form-control" id="title" name="title" required value={newProduct.title} onChange={handleFormProduct} />
                         </div>
                     </div>
 
                     <div className="my-3">
-                        <label htmlFor="description" className="form-label">Descrizione</label>{newProduct.description.length !== 0 ? validate.isDescriptionProduct ? <span className="px-1">👍✅</span> : <span className="px-1">👎❌</span> : null}
+                        <label htmlFor="description" className="form-label">Descrizione</label>{newProduct.description.length !== 0 ? validateProduct.isDescriptionProduct ? <span className="px-1">👍✅</span> : <span className="px-1">👎❌</span> : null}
                         <textarea className="form-control" id="description" name="description" rows="3" value={newProduct.description} onChange={handleFormProduct}></textarea>
                     </div>
 
@@ -231,7 +241,7 @@ export function AddProduct() {
                             </select>
                         </div>
                         <div className="col-md-6">
-                            <label htmlFor="brand" className="form-label">Brand</label>{newProduct.brand.length !== 0 ? validate.isBrandProduct ? <span className="px-1">👍✅</span> : <span className="px-1">👎❌</span> : null}
+                            <label htmlFor="brand" className="form-label">Brand</label>{newProduct.brand.length !== 0 ? validateProduct.isBrandProduct ? <span className="px-1">👍✅</span> : <span className="px-1">👎❌</span> : null}
                             <input type="text" className="form-control" id="brand" name="brand" value={newProduct.brand} onChange={handleFormProduct} />
                         </div>
                         {/* <div className="col-md-4">
@@ -246,11 +256,11 @@ export function AddProduct() {
 
                     <div className="row my-4">
                         <div className="col-md-6">
-                            <label htmlFor="price" className="form-label">Prezzo (€)</label>{newProduct.price !== 0 ? validate.isPriceProduct ? <span className="px-1">👍✅</span> : <span className="px-1">👎❌</span> : null}
+                            <label htmlFor="price" className="form-label">Prezzo (€)</label>{newProduct.price !== 0 ? validateProduct.isPriceProduct ? <span className="px-1">👍✅</span> : <span className="px-1">👎❌</span> : null}
                             <input type="number" className="form-control" id="price" name="price" step="0.01" value={newProduct.price} onChange={handleFormProduct} />
                         </div>
                         <div className="col-md-6">
-                            <label htmlFor="discount" className="form-label">Sconto (%)</label>{newProduct.discount !== 0 ? validate.isDiscountProduct ? <span className="px-1">👍✅</span> : <span className="px-1">👎❌</span> : null}
+                            <label htmlFor="discount" className="form-label">Sconto (%)</label>{newProduct.discount !== 0 ? validateProduct.isDiscountProduct ? <span className="px-1">👍✅</span> : <span className="px-1">👎❌</span> : null}
                             <input type="number" className="form-control" id="discount" name="discount" min="0" max="100" value={newProduct.discount} onChange={handleFormProduct} />
                         </div>
                     </div>

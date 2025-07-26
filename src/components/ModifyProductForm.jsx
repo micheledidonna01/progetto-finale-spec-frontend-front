@@ -7,11 +7,13 @@ export function ModifyProductForm({ product, char }) {
     console.log(char);
     const { products, characteristics } = useContext(ContextProducts);
 
+    // Dichiarazione di useReducer che passa come argomenti il reducer e lo stato iniziale
     const [state, dispatch] = useReducer(productsReducer, {
         products,
         characteristics
     });
 
+    // Dichiarazione di useState
     const [modProduct, setModProduct] = useState({
         id: product.id,
         createdAt: product.createdAt,
@@ -26,6 +28,7 @@ export function ModifyProductForm({ product, char }) {
         discount: 0,
     });
 
+    // Dichiarazione di useState
     const [modCharacteristic, setModCharacteristic] = useState({
         id: char.id,
         title: "Information product",
@@ -53,9 +56,13 @@ export function ModifyProductForm({ product, char }) {
 
     console.log(validation);
 
+
+    // Funzione che gestisce l'invio del form
     function handleSubmit(e) {
+        // Impedisce il comportamento di default del form che è quello di ricaricare la pagina, 
         e.preventDefault();
 
+        // Gestisce la modifica del prodotto nel caso i campi siano vuoti restituisce il valore precedente
         const finalProduct = {
             ...modProduct,
             title: modProduct.title.trim() || product.title,
@@ -68,6 +75,7 @@ export function ModifyProductForm({ product, char }) {
             images: modProduct.images.length ? modProduct.images : product.images,
         };
 
+        // Gestisce la modifica delle caratteristiche nel caso i campi siano vuoti restituisce il valore precedente
         const finalChar = {
             ...modCharacteristic,
             category: modCharacteristic.category || char.category,
@@ -88,7 +96,7 @@ export function ModifyProductForm({ product, char }) {
     }
 
 
-
+    // Funzione che gestisce l'input assegnando i valori ai campi del form del prodotto
     function handleFormProduct(e) {
         const { name, value } = e.target;
         let newValue = value;
@@ -129,7 +137,7 @@ export function ModifyProductForm({ product, char }) {
 
 
 
-
+    // Funzione che gestisce l'input assegnando i valori ai campi del form delle caratteristiche
     function handleFormChar(e) {
         const { name, value } = e.target;
 
@@ -150,8 +158,12 @@ export function ModifyProductForm({ product, char }) {
         }
     }
 
+    // Funzione asincrona che gestisce la modifica del prodotto 
+    // facendo 2 chiamate API una che aggiorna il prodotto e l'altra le caratteristiche
+    // gestita in caso di errore
     async function modifyProduct(product, char) {
         try {
+
             const promise = await fetch(`http://localhost:3001/products/${product.id}`, {
                 method: 'PUT',
                 headers: {
@@ -175,9 +187,7 @@ export function ModifyProductForm({ product, char }) {
             const productData = await productRes.json();
             const charData = await charRes.json();
 
-            // setProducts(prev => prev.map(p => p.id === productData.product.id ? productData.product : p));
-            // setCharacteristics(prev => prev.map(c => c.id === charData.characteristic.id ? charData.characteristic : c));
-
+            // funzione che gestisce la modifica del prodotto rimandandoci al reducer
             dispatch({
                 type: 'UPDATE_PRODUCT', payload: {
                     product: productData.product,
@@ -191,10 +201,6 @@ export function ModifyProductForm({ product, char }) {
             return null;
         }
     }
-
-    // useEffect(() => {
-    //     getPost(product.id);
-    // }, [products, characteristics])
 
     return (
         <form onSubmit={handleSubmit} className="p-4 shadow rounded bg-light">
@@ -226,14 +232,6 @@ export function ModifyProductForm({ product, char }) {
                     <label htmlFor="brand" className="form-label">Brand</label>{modProduct.brand.length !== 0 ? validation.isBrandProduct ? <span className="px-1">👍✅</span> : <span className="px-1">👎❌</span> : null}
                     <input type="text" className="form-control" id="brand" name="brand" value={modProduct.brand} onChange={handleFormProduct} placeholder={product.brand} />
                 </div>
-                {/* <div className="col-md-4">
-                            <label htmlFor="images" className="form-label">Immagini (URL separati da virgola)</label>
-                            <select className="form-select" id="images" name="images" value={modProduct.images} onChange={handleFormProduct}>
-                                <option value="pc-images">For PC</option>
-                                <option value="smartphone-images">For Smartphone</option>
-                                <option value="tablet-images">For Tablet</option>
-                            </select>
-                        </div> */}
             </div>
 
             <div className="row my-4">
