@@ -17,10 +17,12 @@ export function ProductPage() {
 
     const [product, setProduct] = useState(null);
     const [char, setChar] = useState(null);
-    const [productCompaire, setProductCompaire] = useState({});
-    const [charCompaire, setCharCompaire] = useState({});
+
     const [currentIndex, setCurrentIndex] = useState(0);
+
     const [selected, setSelected] = useState([]);
+    const [selectedIds, setSelectedIds] = useState([]); 
+
     const [modifyForm, setModifyForm] = useState(false);
 
     const {
@@ -130,57 +132,45 @@ export function ProductPage() {
     // funzione asincrona che gestisce la modifica del prodotto
     async function handleSelect(e) {
         console.log(e.target.selectedOptions);
-        if(e.target.selectedOptions.length === 0) return;
-        let selectedId = Array.from(e.target.selectedOptions, (option) => option.value);
-        if(selectedId.includes("not-prod")) return setSelected([]);
-        selectedId = selectedId.map(id => parseInt(id));
-        console.log(selectedId);
+        const values = Array.from(e.target.selectedOptions, (option) => option.value);
+        // let selectedId = Array.from(e.target.selectedOptions, (option) => option.value);
+
+        //controllo se nell'array di id è presente "not-prod" e nel caso assegno selectedIds come array vuoto
+        if(values.includes("not-prod")){
+            setSelectedIds([]);
+            setSelected([]);
+            return;
+        }
+
+        // trasformo le stringhe di numeri in interi
+        const ids = values.map(value => parseInt(value));
+        setSelectedIds(ids);
+
+        console.log(selectedIds);
+
         // se non è stato selezionato nessun prodotto, esco
-        if (selectedId.length === 0) return;
+        if (ids.length === 0) return;
 
         // recupero il prodotto e le caratteristiche che voglio confrontare
         try {
 
-            const promisesProduct = selectedId.map(id => getDataProduct(id));
+            // recupero dati dei prodotti
+            const promisesProduct = ids.map(id => getDataProduct(id));
             console.log(promisesProduct);
             const resultsProduct = await Promise.all(promisesProduct)
 
-            const promisesChar = selectedId.map(id => getDataChar(id));
+            // // recupero dati delle caratteristiche
+            const promisesChar = ids.map(id => getDataChar(id));
             console.log(promisesChar);
             const resultsChar = await Promise.all(promisesChar)
 
-            // const [productRes, charRes] = await Promise.all([
-            //     fetch(`http://localhost:3001/products/${selectedId}`),
-            //     fetch(`http://localhost:3001/characteristics/${selectedId}`),
-            // ]);
-
-            // recupero dati
-            // const productData = await productRes.json();
-            // const charData = await charRes.json();
-
-            // setto il prodotto e le caratteristiche
-            // setProductCompaire(productData.product);
-            // setCharCompaire(charData.characteristic);
-
             console.log(resultsProduct);
-            setProductCompaire(resultsProduct.map(r => r.product));
-            console.log(productCompaire);
 
-            console.log(resultsChar);
-            setCharCompaire(resultsChar.map(r => r.characteristic));
-            console.log(charCompaire);
+            // creo un nuovo array con i prodotti e le caratteristiche che voglio confrontare
+            const newSelected = resultsProduct.map((r, i) => ({ product: r.product, characteristic: resultsChar[i].characteristic }));
 
-            const existSelected = selected.find(s => s.product.id === resultsProduct[0].product.id);
-
-            if (existSelected) {
-                setSelected(prev => prev.filter(s => s.product.id !== resultsProduct[0].product.id));
-                return;
-            } 
-
-            setSelected(prev => [
-                ...prev,
-                ...resultsProduct.map((r, i) => ({ product: r.product, characteristic: resultsChar[i].characteristic }))
-            ]);
+            // aggiorno lo stato selected
+            setSelected(newSelected);
 
 
             console.log(selected);
@@ -292,7 +282,7 @@ export function ProductPage() {
                 <select
                     className="form-select"
                     name="selectCompare"
-                    value={selected}
+                    value={selectedIds}
                     onChange={handleSelect}
                     multiple
                 >
@@ -325,12 +315,12 @@ export function ProductPage() {
                     ) : (
                         <p>Nessun dettaglio disponibile</p>
                     )
-                ) : product?.title === productCompaire?.title ? (
+                ) : selected.some((s) => s.product.id === product.id) ? (
                     <div className="alert alert-danger" role="alert">
                         <strong>Attenzione!</strong> I prodotti selezionati sono uguali. Seleziona un altro prodotto.
                     </div>
                 ) : (
-                    <div className="d-flex justify-content-between flex-wrap mt-4">
+                    <div className="d-flex justify-content-center flex-wrap mt-4">
                         {[{ p: product, c: char }].map(({ p, c }, i) => (
                             <div className="col-sm-12 col-md-6 p-3" key={i}>
                                 <h3>{p?.title}</h3>
@@ -362,23 +352,7 @@ export function ProductPage() {
                             </div>
                         ))}
                     </div>
-                    // <div className="d-flex justify-content-between flex-wrap mt-4">
-                    //     {[{ p: product, c: char }, { p: productCompaire, c: charCompaire }].map(({ p, c }, i) => (
-                    //         <div className="col-6" key={i}>
-                    //             <h3>{p?.title}</h3>
-                    // <ul className="list-group list-group-flush">
-                    //     <li className="list-group-item"><b>Category:</b> {p?.category}</li>
-                    //     <li className="list-group-item"><b>Display:</b> {c?.info?.display}</li>
-                    //     <li className="list-group-item"><b>Processor:</b> {c?.info?.processor}</li>
-                    //     <li className="list-group-item"><b>RAM:</b> {c?.info?.ram}</li>
-                    //     <li className="list-group-item"><b>Storage:</b> {c?.info?.storage}</li>
-                    //     <li className="list-group-item"><b>Battery:</b> {c?.info?.battery}</li>
-                    //     <li className="list-group-item"><b>Camera:</b> {c?.info?.camera}</li>
-                    //     <li className="list-group-item"><b>Price:</b> {p?.price.toFixed(2)}€</li>
-                    // </ul>
-                    //         </div>
-                    //     ))}
-                    // </div>
+
                 )}
             </div>
         </div>
