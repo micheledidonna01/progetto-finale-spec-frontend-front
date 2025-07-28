@@ -320,9 +320,9 @@ export function ProductPage() {
                         <strong>Attenzione!</strong> I prodotti selezionati sono uguali. Seleziona un altro prodotto.
                     </div>
                 ) : (
-                    <div className="d-flex justify-content-center flex-wrap mt-4">
+                    <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 justify-content-center  mt-4 g-4">
                         {[{ p: product, c: char }].map(({ p, c }, i) => (
-                            <div className="col-sm-12 col-md-6 p-3" key={i}>
+                            <div className="col" key={i}>
                                 <h3>{p?.title}</h3>
                                 <ul className="list-group list-group-flush">
                                     <li className="list-group-item"><b>Category:</b> {p?.category}</li>
@@ -337,7 +337,7 @@ export function ProductPage() {
                             </div>
                         ))}
                         {selected.map((s, i) => (
-                            <div className="col-sm-12 col-md-6 p-3" key={i}>
+                            <div className="col" key={i}>
                                 <h3>{s.product?.title}</h3>
                                 <ul className="list-group list-group-flush">
                                     <li className="list-group-item"><b>Category:</b> {s.product?.category}</li>
