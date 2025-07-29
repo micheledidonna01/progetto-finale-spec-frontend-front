@@ -6,7 +6,6 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import { ContextProducts } from "../context/ContextProducts";
 import { ModifyProductForm } from "../components/ModifyProductForm";
 import productsReducer from "../reducers/productsReducer";
-import Select from 'react-select';
 
 export function ProductPage() {
 
@@ -46,7 +45,7 @@ export function ProductPage() {
         characteristics,
     });
 
-
+    // controllo se il prodotto è nella lista dei preferiti
     const isFavourite = product && product.id
         ? favourites.some((f) => f.id === product.id)
         : false;
@@ -118,11 +117,14 @@ export function ProductPage() {
         }
     }
 
+    // funzione asincrona per recuperare il prodotto
     async function getDataProduct(id) {
         const res = await fetch(`http://localhost:3001/products/${id}`);
 
         return res.json();
     }
+
+    //funzione asincrona per recuperare le caratteristiche
     async function getDataChar(id) {
         const resChar = await fetch(`http://localhost:3001/characteristics/${id}`);
 

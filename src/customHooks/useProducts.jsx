@@ -1,17 +1,20 @@
-import { useState, useEffect, useReducer} from "react";
+import { useState, useReducer} from "react";
 import productsReducer from "../reducers/productsReducer";
-
+import useStorage from "./useStorage";
 function useProducts() {
     const [products, setProducts] = useState([]);
     const [search, setSearch] = useState('');
     const [category, setCategory] = useState('');
     const [characteristics, setCharacteristics] = useState([]);
 
-    const [favourites, setFavourites] = useState(() => {
-        const storedValue = localStorage.getItem('favourites');
-        return storedValue ? JSON.parse(storedValue) : [];
+    // const [favourites, setFavourites] = useState(() => {
+    //     const storedValue = localStorage.getItem('favourites');
+    //     return storedValue ? JSON.parse(storedValue) : [];
        
-    });
+    // });
+
+    const [favourites, setFavourites] = useStorage("inputValue", []);
+
 
     const [state, dispatch] = useReducer(productsReducer, []);
     // const [state2, dispatch2] = useReducer(productsReducer, []);
@@ -27,9 +30,9 @@ function useProducts() {
     }
 
 
-        useEffect(() => {
-            localStorage.setItem('favourites', JSON.stringify(favourites));
-        }, [favourites])
+        // useEffect(() => {
+        //     localStorage.setItem('favourites', JSON.stringify(favourites));
+        // }, [favourites])
 
     const getProducts = async (search, category) => {
         try {
