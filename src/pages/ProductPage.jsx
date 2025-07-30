@@ -221,6 +221,11 @@ export function ProductPage() {
                                 className="immagine-top-card"
                                 alt={product.title}
                             />
+                            <span className="d-flex justify-content-center fs-1 text-secondary position-absolute start-0 end-0 bottom-0">
+                                <i className={currentIndex === 0 ? `bi bi-dot text-black text-bold` : `bi bi-dot`}></i>
+                                <i className={currentIndex === 1 ? `bi bi-dot text-black text-bold` : `bi bi-dot`}></i>
+                                <i className={currentIndex === 2 ? `bi bi-dot text-black text-bold` : `bi bi-dot`}></i>
+                            </span>
                             <span
                                 className="text-black position-absolute next"
                                 onClick={() => setCurrentIndex((prev) => Math.min(prev + 1, product.images.length - 1))}
