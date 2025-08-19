@@ -1,5 +1,9 @@
+//funzione reducer
 export default function productsReducer(state, action) {
+    //verifico il tipo di azione
     switch (action.type) {
+        
+        //aggiunta di un prodotto
         case 'ADD_PRODUCT':
             return {
                 ...state,
@@ -7,6 +11,7 @@ export default function productsReducer(state, action) {
                 characteristics: [...state.characteristics, action.payload.characteristic],
             };
 
+        //eliminazione di un prodotto
         case 'DELETE_PRODUCT':
             return {
                 ...state,
@@ -14,7 +19,7 @@ export default function productsReducer(state, action) {
                 characteristics: state.characteristics.filter(c => c.id !== action.payload),
             };
 
-
+        //modifica di un prodotto
         case 'UPDATE_PRODUCT':
             return {
                 ...state,
