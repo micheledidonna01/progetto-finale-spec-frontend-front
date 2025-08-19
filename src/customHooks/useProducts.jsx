@@ -7,35 +7,30 @@ function useProducts() {
     const [category, setCategory] = useState('');
     const [characteristics, setCharacteristics] = useState([]);
 
-    // const [favourites, setFavourites] = useState(() => {
-    //     const storedValue = localStorage.getItem('favourites');
-    //     return storedValue ? JSON.parse(storedValue) : [];
-       
-    // });
-
+    //uso dello storage
     const [favourites, setFavourites] = useStorage("inputValue", []);
 
-
+    //uso dello useReducer
     const [state, dispatch] = useReducer(productsReducer, []);
-    // const [state2, dispatch2] = useReducer(productsReducer, []);
 
+    //funzione per aggiungere ai preferiti
     function toggleFavourites(p) {
-
+        // se il prodotto è già presente, lo rimuovo
         if (favourites.some(f => f.id === p.id)) {
             setFavourites(favourites.filter(f => f.id !== p.id));
             return
         }
+
+        // altrimenti lo aggiungo
         setFavourites([...favourites, p]);
         console.log(favourites);
     }
 
 
-        // useEffect(() => {
-        //     localStorage.setItem('favourites', JSON.stringify(favourites));
-        // }, [favourites])
-
+    //funzione per ottenere i prodotti
     const getProducts = async (search, category) => {
         try {
+            
             const promise = await fetch(`${import.meta.env.VITE_API_URL_PRODUCTS}?search=${search}&category=${category}`);
 
             if (!promise.ok) {
@@ -54,7 +49,7 @@ function useProducts() {
         }
     }
 
-
+    //funzione per ottenere le caratteristiche
     const getCharacteristics = async () =>{
         try{
             const promise = await fetch('http://localhost:3001/characteristics');
@@ -72,6 +67,7 @@ function useProducts() {
         }
     }
 
+    //funzione per cancellare un prodotto
     const deleteProduct = async (p) => {
         try {
             const [res1, res2] = await Promise.all([
@@ -106,6 +102,7 @@ function useProducts() {
         }
     }
 
+    //funzione per modificare un prodotto
     const modifyProduct = async (finalProduct, finalChar) => {
         try {
             const promise = await fetch(`http://localhost:3001/products/${product.id}`, {
