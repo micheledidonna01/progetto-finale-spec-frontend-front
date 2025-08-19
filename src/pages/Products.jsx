@@ -43,7 +43,7 @@ function Products() {
         setOrdered(selected); // aggiorna comunque lo stato, per tenere traccia
 
         const copyProducts = [...products];
-
+        
         if (selected === 'titleAz') {
             copyProducts.sort((a, b) => a.title.toLowerCase().localeCompare(b.title.toLowerCase()));
         }
@@ -119,7 +119,7 @@ function Products() {
             </section>
                 <h1 className="pt-5 fsx-3 text-center text-white">Products</h1>
             <div className="d-flex justify-content-center w-100 gap-2 flex-wrap">
-                <div className="col-sm-12 col-md-4 col-lg-3">
+                <div className="col-12 col-md-4 col-lg-3">
                     <select value={category} className="form-select" onChange={(e) => setCategory(e.target.value)}>
                         <option value="">All</option>
                         <option value="tablet">Tablet</option>
@@ -127,7 +127,7 @@ function Products() {
                         <option value="smartphone">Smartphone</option>
                     </select>
                 </div>
-                <div className="col-sm-12 col-md-4 col-lg-3">
+                <div className="col-12 col-md-4 col-lg-3">
                     <input type="text"
                         placeholder="Search a Device"
                         
@@ -137,7 +137,7 @@ function Products() {
                     />
                 </div>
 
-                <div className="col-sm-12 col-md-4 col-lg-3">
+                <div className="col-12 col-md-4 col-lg-3">
                     <select value={ordered} className="form-select" onChange={handleSelect} ref={scroll}>
                         <option value="">Ordina per...</option>
                         <option value="titleAz">Title a-z/A-Z</option>
