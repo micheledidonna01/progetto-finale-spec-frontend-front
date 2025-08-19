@@ -16,9 +16,9 @@ export function Footer() {
                     <div className="col-md-4 mb-3">
                         <h5>Collegamenti utili</h5>
                         <ul className="list-unstyled">
-                            <li><Link href="/" className="text-white text-decoration-none">Home</Link></li>
-                            <li><Link href="/products" className="text-white text-decoration-none">Prodotti</Link></li>
-                            <li><Link href="/contact" className="text-white text-decoration-none">Contatti</Link></li>
+                            <li><Link to="/" className="text-white text-decoration-none">Home</Link></li>
+                            <li><Link to="/products" className="text-white text-decoration-none">Prodotti</Link></li>
+                            <li><Link to="/contact" className="text-white text-decoration-none">Contatti</Link></li>
                         </ul>
                     </div>
 
