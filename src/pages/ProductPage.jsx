@@ -55,18 +55,15 @@ function ProductPage() {
 
     console.log(options);
 
+    
+    // controllo se il prodotto è nella lista dei preferiti 
+    const isFavourite = product?.id ? favourites.some((f) => f.id === product.id) : false;
+    
     // dichiarazione di useReducer
     const [state, dispatch] = useReducer(productsReducer, {
         products,
         characteristics,
     });
-
-    // controllo se il prodotto è nella lista dei preferiti 
-    // useMemo per evitare di rifare il controllo some ad ogni render
-    // lo ricalcola solo se favourites o product cambiano
-    const isFavourite = useMemo(() => {
-        return product?.id ? favourites.some((f) => f.id === product.id) : false;
-    }, [favourites, product]);
 
     // visualizzazione del prodotto al montare del componente e al cambiamento di id
     useEffect(() => {

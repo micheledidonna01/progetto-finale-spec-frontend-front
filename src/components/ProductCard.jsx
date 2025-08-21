@@ -45,5 +45,5 @@ function ProductCard({ p, isFavourite, toggleFavourites }) {
     </>
 }
 
-// Aggiungo il memo per ottimizzare il rendimento del componente ProductCard
+// Aggiungo il memo per evitare il re-render del componente se le props non cambiano
 export default React.memo(ProductCard); 
