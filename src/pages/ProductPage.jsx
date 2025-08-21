@@ -1,4 +1,5 @@
-import { useState, useEffect, useContext, useReducer } from "react";
+import { useState, useEffect, useContext, useReducer, useMemo } from "react";
+import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
@@ -7,7 +8,7 @@ import { ContextProducts } from "../context/ContextProducts";
 import { ModifyProductForm } from "../components/ModifyProductForm";
 import productsReducer from "../reducers/productsReducer";
 
-export function ProductPage() {
+function ProductPage() {
 
     const { id } = useParams();
 
@@ -20,7 +21,7 @@ export function ProductPage() {
     const [currentIndex, setCurrentIndex] = useState(0);
 
     const [selected, setSelected] = useState([]);
-    const [selectedIds, setSelectedIds] = useState([]); 
+    const [selectedIds, setSelectedIds] = useState([]);
 
     const [modifyForm, setModifyForm] = useState(false);
 
@@ -36,8 +37,23 @@ export function ProductPage() {
         // setCharacteristics
     } = useContext(ContextProducts);
 
-    // filtro per categoria del prodotto
-    const filterCategory = products.filter((p) => p.category === product?.category);
+
+    // calcola i prodotti che hanno la stessa categoria del prodotto visualizzato
+    // useMemo evita di rifare il filter ogni render se products o la categoria non cambiano
+    const filterCategory = useMemo(() => {
+        return products.filter((p) => p.category === product?.category);
+    }, [products, product?.category]);
+
+    // creo un array con le opzioni dei prodotti che hanno la stessa categoria 
+    // utilizzando useMemo per evitare di rimappare l'array se filterCategory non cambia
+    const options = useMemo(() => {
+        return filterCategory.map((p) => ({
+            value: p.id,
+            label: p.title
+        }));
+    }, [filterCategory]);
+
+    console.log(options);
 
     // dichiarazione di useReducer
     const [state, dispatch] = useReducer(productsReducer, {
@@ -45,10 +61,12 @@ export function ProductPage() {
         characteristics,
     });
 
-    // controllo se il prodotto è nella lista dei preferiti
-    const isFavourite = product && product.id
-        ? favourites.some((f) => f.id === product.id)
-        : false;
+    // controllo se il prodotto è nella lista dei preferiti 
+    // useMemo per evitare di rifare il controllo some ad ogni render
+    // lo ricalcola solo se favourites o product cambiano
+    const isFavourite = useMemo(() => {
+        return product?.id ? favourites.some((f) => f.id === product.id) : false;
+    }, [favourites, product]);
 
     // visualizzazione del prodotto al montare del componente e al cambiamento di id
     useEffect(() => {
@@ -138,7 +156,7 @@ export function ProductPage() {
         // let selectedId = Array.from(e.target.selectedOptions, (option) => option.value);
 
         //controllo se nell'array di id è presente "not-prod" e nel caso assegno selectedIds come array vuoto
-        if(values.includes("not-prod")){
+        if (values.includes("not-prod")) {
             setSelectedIds([]);
             setSelected([]);
             return;
@@ -182,17 +200,6 @@ export function ProductPage() {
             console.error(e);
         }
     }
-
-    // visualizzazione dei prodotti che hanno la stessa categoria
-    const options = filterCategory.map((p) => {
-        return {
-            value: p.id,
-            label: p.title
-        }
-
-    })
-
-    console.log(options);
 
     return (
         <div className="bg-light">
@@ -365,3 +372,5 @@ export function ProductPage() {
         </div>
     );
 }
+
+export default React.memo(ProductPage);
