@@ -1,4 +1,4 @@
-import { useMemo, useReducer, useState } from "react"
+import { useEffect, useMemo, useReducer, useState, useRef } from "react"
 import { ContextProducts } from "../context/ContextProducts";
 import { useContext } from "react";
 import productsReducer from "../reducers/productsReducer";
@@ -107,7 +107,7 @@ export function AddProduct() {
     }
 
     //validazione dei campi input per il nuovo prodotto con useMemo per evitare il re-render inutili
-    const validateProduct = useMemo(() => ({
+    const validateProduct = {
 
         isTitleProduct: newProduct.title.length > 3,
         isDescriptionProduct: newProduct.description.length > 15 && newProduct.description.length < 200,
@@ -116,17 +116,17 @@ export function AddProduct() {
         isPriceProduct: newProduct.price > 0,
         isDiscountProduct: newProduct.discount > 0 && newProduct.discount < 100,
 
-    }), [newProduct]);
+    };
 
     // validazione dei campi input per le caratteristiche con useMemo per evitare re-render inutili
-    const validateChar = useMemo(() => ({
+    const validateChar = {
         isRamChar: newCharacteristic.info.ram !== '',
         isStorageChar: newCharacteristic.info.storage !== '',
         isBatteryChar: newCharacteristic.info.battery !== '',
         isCameraChar: newCharacteristic.info.camera !== '',
         isProcessorChar: newCharacteristic.info.processor !== '',
         isDisplayChar: newCharacteristic.info.display !== '',
-    }), [newCharacteristic]);
+    }
 
     function handleSubmit(e) {
         e.preventDefault();
@@ -153,6 +153,7 @@ export function AddProduct() {
         addProduct();
         setNewProduct(initialSetProduct);
         setNewCharacteristic(initialSetChar);
+        titleRef.current.focus();
     }
 
     function handleFormProduct(e) {
@@ -210,7 +211,10 @@ export function AddProduct() {
         }
     }
 
-
+    const titleRef = useRef();
+    useEffect(() => {
+        titleRef.current.focus();
+    }, []);
     return (
         <div className="py-5">
 
@@ -221,7 +225,7 @@ export function AddProduct() {
                     <div className="row my-3">
                         <div className="col-12 ">
                             <label htmlFor="title" className="form-label">Nome</label>{newProduct.title.length !== 0 ? validateProduct.isTitleProduct ? <span className="text-success px-1">👍✅</span> : <span className="text-danger px-1">👎❌</span> : null}
-                            <input type="text" className="form-control" id="title" name="title" required value={newProduct.title} onChange={handleFormProduct} />
+                            <input type="text" className="form-control" id="title" name="title" required value={newProduct.title} onChange={handleFormProduct} ref={titleRef}/>
                         </div>
                     </div>
 
